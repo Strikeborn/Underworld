@@ -16,8 +16,6 @@ size = Vector3(0.16, 0.53, 0.37)
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1, 0)
 script = ExtResource("1_0ewp1")
 Move_Speed = 2.5
-Sprint_Speed = null
-PlayerInventory = null
 InputDictionary = {
 "Backward": "Backward",
 "Escape": "Escape",
@@ -28,10 +26,7 @@ InputDictionary = {
 "Right": "Right",
 "Sprint": "Sprint"
 }
-Mouse_Sens = null
-Mouse_Smooth = null
 TiltThreshhold = 0.0
-next_level_path = null
 
 [node name="CollisionShape3D" type="CollisionShape3D" parent="."]
 shape = SubResource("CapsuleShape3D_g5alh")
@@ -84,7 +79,7 @@ transform = Transform3D(-0.5000001, 0, -0.86602545, 0, 1, 0, 0.86602545, 0, -0.5
 transform = Transform3D(-4.371139e-08, 0, -1, 0, 1, 0, 1, 0, -4.371139e-08, 0.0047056526, 0.011193395, -0.36499992)
 
 [node name="PhoneFullPose" type="Marker3D" parent="."]
-transform = Transform3D(-4.371139e-08, 0, -1, 0, 1, 0, 1, 0, -4.371139e-08, 0.0047056526, 0.47649324, -0.21095198)
+transform = Transform3D(-4.371139e-08, 0, -1, 0, 1, 0, 1, 0, -4.371139e-08, 0.014169067, 0.12121868, -0.1357047)
 
 [node name="Tilt" type="Node3D" parent="."]
 

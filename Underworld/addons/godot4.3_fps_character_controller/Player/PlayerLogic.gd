@@ -1,5 +1,6 @@
 class_name Player extends CharacterBody3D
 
+var _t_hold_fired := false
 var _move_locked := false
 var _t_pressed_at := 0.0
 const T_HOLD_SEC := 0.4   # hold T this long to holster
@@ -92,7 +93,7 @@ func _process(delta: float) -> void:
 		_t_pressed_at = Time.get_ticks_msec() / 1000.0
 		_t_hold_fired = false
 
-	# If T is being held, auto-holster once threshold is crossed (no need to wait for release)
+	# T hold: holster as soon as threshold is crossed (don’t wait for release)
 	if Input.is_action_pressed("phone_prev") and not _t_hold_fired:
 		var now := Time.get_ticks_msec() / 1000.0
 		if (now - _t_pressed_at) >= T_HOLD_SEC:
