@@ -1,11 +1,13 @@
 class_name Player extends CharacterBody3D
 
-
-
+var _move_locked := false
+var _t_pressed_at := 0.0
+const T_HOLD_SEC := 0.4   # hold T this long to holster
 @export_category("Player Settings")
 @export var Move_Speed : float = 1.5
 @export var Sprint_Speed : float = 10.0
-
+@onready var phone3d := $"Head/Phone3D"
+@onready var _phone_view: SubViewportContainer = get_node_or_null("/root/Game/PhoneLayer/PhoneView")
 @export var PlayerInventory : Array[Dictionary] = []
 
 @export_category("Inputs")
@@ -68,14 +70,44 @@ func _ready() -> void:
 	if not is_in_group("player"):
 		add_to_group("player")
 	print("Player groups: ", get_groups())
+	if phone3d and phone3d.has_signal("phone_state_changed"):
+		phone3d.connect("phone_state_changed", Callable(self, "_on_phone_state_changed"))
+
+func _on_phone_state_changed(state: String) -> void:
+	# Lock movement when close or full
+	_move_locked = (state == "close" or state == "full")
 
 func _input(event: InputEvent) -> void:
 	if event is InputEventMouseMotion and Input.mouse_mode == Input.MOUSE_MODE_CAPTURED:
 		Camera_Inp = event.relative
 
 func _process(delta: float) -> void:
-	if Input.is_action_just_pressed("Use phone")and phone:
-		phone.call("toggle")
+	 # --- R cycles forward ---
+	if Input.is_action_just_pressed("phone_next") and phone3d:
+		phone3d.call("next_pose")
+
+	# --- T tap = back one, hold = holster ---
+	# T handling (press/hold/release)
+	if Input.is_action_just_pressed("phone_prev"):
+		_t_pressed_at = Time.get_ticks_msec() / 1000.0
+		_t_hold_fired = false
+
+	# If T is being held, auto-holster once threshold is crossed (no need to wait for release)
+	if Input.is_action_pressed("phone_prev") and not _t_hold_fired:
+		var now := Time.get_ticks_msec() / 1000.0
+		if (now - _t_pressed_at) >= T_HOLD_SEC:
+			if phone3d:
+				phone3d.call("holster")
+			_t_hold_fired = true
+
+	# On release: only step-back if we didn't already auto-holster
+	if Input.is_action_just_released("phone_prev"):
+		if not _t_hold_fired and phone3d:
+			phone3d.call("prev_pose")
+
+	# If phone is “close/full”, ignore camera look (you already stop look when UI is up),
+	# and prevent movement in _physics_process via _move_locked flag.
+
 	# Camera Lock
 	if Input.is_action_just_pressed(InputDictionary["Escape"]) and _isMouseCaptured:
 		Input.set_mouse_mode(Input.MOUSE_MODE_VISIBLE)
@@ -95,6 +127,9 @@ func _process(delta: float) -> void:
 	rotate_y(-deg_to_rad(Rot_Vel.x))
 	head.rotation.x = clamp(head.rotation.x, -1.5, 1.5)
 	Camera_Inp = Vector2.ZERO
+	var phone_ui_open := _phone_view != null and _phone_view.visible
+	if phone_ui_open:
+		return  # skip look/move while the phone UI is open# skip camera/movement code while UI is up
 
 
 func _physics_process(delta: float) -> void:
@@ -107,7 +142,12 @@ func _physics_process(delta: float) -> void:
 		_has_pending_spawn = false
 		if "velocity" in self:
 			velocity = Vector3.ZERO
-	
+	if _move_locked:
+		# zero horizontal velocity but keep gravity/jump handling as you prefer
+		velocity.x = move_toward(velocity.x, 0.0, 1000.0)
+		velocity.z = move_toward(velocity.z, 0.0, 1000.0)
+		move_and_slide()
+		return
 	# Handle jump.
 	if Input.is_action_just_pressed(InputDictionary["Jump"]) and is_on_floor():
 		velocity.y = JUMP_VELOCITY

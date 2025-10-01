@@ -1,0 +1,5 @@
+res://addons/godot4.3_fps_character_controller/Player/player.tscn
+res://Game.tscn
+res://addons/godot4.3_fps_character_controller/Player/PlayerLogic.gd
+res://levels/phone.gd
+res://game.gd

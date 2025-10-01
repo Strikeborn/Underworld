@@ -34,9 +34,14 @@ func _finish_player_spawn() -> void:
 func _on_phone_link_clicked(path: String) -> void:
 	# example: path is a level path like "res://levels/Pac2D.tscn"
 	await load_level(path, true)  # your existing loader & fade
+	# Optional: after switching to 2D, holster so when we return to 3D we start hip
+	if phone3d:
+		phone3d.call_deferred("holster")
 
 func _ready() -> void:
 	# connect phone events
+	if phone3d and phone3d.has_signal("phone_link_clicked"):
+		phone3d.connect("phone_link_clicked", Callable(self, "_on_phone_link_clicked"))
 	if phone3d:
 		phone3d.connect("phone_opened", _on_phone_opened)
 		phone3d.connect("phone_closed", _on_phone_closed)

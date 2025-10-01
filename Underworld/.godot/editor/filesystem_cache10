@@ -1,5 +1,5 @@
 63f7b34db8d8cdea90c76aacccf841ec
-::res://::1759283217
+::res://::1759321155
 area_3d.gd::GDScript::8621941668363607593::1759283010::0::1::::<>Area3D<><>0<>0<><>::
 export_presets.cfg::TextFile::-1::1759283010::0::1::::<><><>0<>0<><>::
 game.gd::GDScript::205887891694313830::1759283010::0::1::::<>Node3D<><>0<>0<><>::
@@ -11,12 +11,12 @@ README.md::TextFile::-1::1759283010::0::1::::<><><>0<>0<><>::
 ::res://addons/godot4.3_fps_character_controller/::1759283010
 godot4.3_fps_character_controller.gd::GDScript::1659884081048217523::1759283010::0::1::::<>EditorPlugin<><>0<>1<><>::
 plugin.cfg::TextFile::-1::1759283010::0::1::::<><><>0<>0<><>::
-::res://addons/godot4.3_fps_character_controller/Player/::1759283010
+::res://addons/godot4.3_fps_character_controller/Player/::1759284178
 Interactable.gd::GDScript::7580206567866857759::1759283010::0::1::::Interactable<>Node<><>0<>0<><>::
-player.tscn::PackedScene::6831151990695988069::1759283010::0::1::::<><><>0<>0<><>::uid://dmsdblns31p6w::::res://addons/godot4.3_fps_character_controller/Player/PlayerLogic.gd<>uid://cxgye82mmsj3w::::res://addons/godot4.3_fps_character_controller/Player/player_inetractcast_logic.gd<>uid://6hflm8vkdjoo::::res://addons/godot4.3_fps_character_controller/Player/Fonts/AmaticSC-Bold.ttf<>uid://bcxmr22sg84xe::::res://levels/phone.gd<>uid://h6o7nvdiwmhl::::res://addons/godot4.3_fps_character_controller/Player/Fonts/AmaticSC-Regular.ttf<>uid://c100htsfmykij::::res://levels/phone_ui.gd
-PlayerLogic.gd::GDScript::8038871509776576384::1759283010::0::1::::Player<>CharacterBody3D<><>0<>0<><>::
+player.tscn::PackedScene::6831151990695988069::1759284178::0::1::::<><><>0<>0<><>::uid://dmsdblns31p6w::::res://addons/godot4.3_fps_character_controller/Player/PlayerLogic.gd<>uid://cxgye82mmsj3w::::res://addons/godot4.3_fps_character_controller/Player/player_inetractcast_logic.gd<>uid://6hflm8vkdjoo::::res://addons/godot4.3_fps_character_controller/Player/Fonts/AmaticSC-Bold.ttf<>uid://bcxmr22sg84xe::::res://levels/phone.gd<>uid://h6o7nvdiwmhl::::res://addons/godot4.3_fps_character_controller/Player/Fonts/AmaticSC-Regular.ttf<>uid://c100htsfmykij::::res://levels/phone_ui.gd
+PlayerLogic.gd::GDScript::8038871509776576384::1759284178::0::1::::Player<>CharacterBody3D<><>0<>0<><>::
 player_inetractcast_logic.gd::GDScript::6401037164129574274::1759283010::0::1::::<>RayCast3D<><>0<>0<><>::
-::res://addons/godot4.3_fps_character_controller/Player/Fonts/::1759283010
+::res://addons/godot4.3_fps_character_controller/Player/Fonts/::1759283217
 AmaticSC-Bold.ttf::FontFile::2190628707980592038::1759283010::1759283217::1::::<><><>0<>0<>f04b0d213eb5f24c5c7a71eef32250a8<>res://.godot/imported/AmaticSC-Bold.ttf-c3d9a4c039fb3842889a7114884098b0.fontdata::
 AmaticSC-Regular.ttf::FontFile::556225514538087289::1759283010::1759283217::1::::<><><>0<>0<>93e392e2347ba0a560fbf39007549761<>res://.godot/imported/AmaticSC-Regular.ttf-ab903b1b71a5656265498e624884205f.fontdata::
 ::res://levels/::1759283010

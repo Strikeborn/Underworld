@@ -1,91 +1,141 @@
 extends Node3D
 
-signal phone_opened
-signal phone_closed
-signal phone_link_clicked(path: String)
+signal phone_state_changed(state: String)
+signal phone_link_clicked(path: String)   # relay to Game after “full” tween
 
-@export var move_time := 0.25
-@export var enabled := true
+@export var move_time := 0.20
+
+@export var hip_marker: NodePath
 @export var held_marker: NodePath
 @export var close_marker: NodePath
+@export var full_marker: NodePath   # optional; if empty, we’ll reuse close
 
-@onready var head: Node3D = get_node("/root/Game/Player/Head")
-@onready var ui_viewport: SubViewport = $SubViewport
+@onready var head: Node3D = $".."
+@onready var phone_view_container: CanvasItem = get_node_or_null("/root/Game/PhoneLayer/PhoneView")
+@onready var phone_vp: SubViewport = $SubViewport
 @onready var phone_ui: Control = $SubViewport/PhoneUI
 
+var _hip_xf: Transform3D
 var _held_xf: Transform3D
 var _close_xf: Transform3D
-var _state := "held"        # "held" | "close"
-var _tween: Tween
+var _full_xf: Transform3D
+var _state := "hip"        # "hip" | "held" | "close" | "full"
+var _tween: Tween = null
 
 func _ready() -> void:
-	# Cache poses from markers (local to Head). Fallback to sane defaults.
-	var held_ref: Node3D = null
-	var close_ref: Node3D = null
-	if held_marker != NodePath(""):
-		held_ref = get_node_or_null(held_marker) as Node3D
-	if close_marker != NodePath(""):
-		close_ref = get_node_or_null(close_marker) as Node3D
+	# Cache local transforms from markers (markers live under Head, same space as Phone3D)
+	_hip_xf   = _xf_from_marker(hip_marker,  Vector3(0.15, -0.35,  0.15))
+	_held_xf  = _xf_from_marker(held_marker, Vector3(0.30, -0.12, -0.45))
+	_close_xf = _xf_from_marker(close_marker,Vector3(0.15, -0.05, -0.30))
+	var full_default := Vector3(0.00, -0.02, -0.20)
+	_full_xf  = _xf_from_marker(full_marker, full_default)
 
-	if held_ref != null:
-		_held_xf = held_ref.transform
-	else:
-		_held_xf = Transform3D(Basis(), Vector3(0.25, -0.15, -0.5))
+	# Start holstered at hip
+	_apply_transform_immediate(_hip_xf)
+	_set_overlay(false)
+	_emit_state()
 
-	if close_ref != null:
-		_close_xf = close_ref.transform
-	else:
-		_close_xf = Transform3D(Basis(), Vector3(0.0, -0.05, -0.25))
+	# UI: when a link is clicked, go full first, then relay after tween
+	if phone_ui and phone_ui.has_signal("link_clicked"):
+		phone_ui.connect("link_clicked", Callable(self, "_on_ui_link_clicked"))
 
-	# Start in held pose
-	transform = _held_xf
+func _xf_from_marker(path: NodePath, fallback_pos: Vector3) -> Transform3D:
+	if path != NodePath(""):
+		var m := get_node_or_null(path) as Node3D
+		if m:
+			return m.transform
+	return Transform3D(Basis(), fallback_pos)
 
-	# Hook UI
-	if phone_ui != null and phone_ui.has_signal("link_clicked"):
-		phone_ui.connect("link_clicked", _on_ui_link_clicked)
+func _apply_transform_immediate(t: Transform3D) -> void:
+	if _tween:
+		_tween.kill()
+		_tween = null
+	transform = t
 
-	visible = enabled
-	if not enabled and _state == "close":
-		put_away()
-
-func set_enabled(v: bool) -> void:
-	enabled = v
-	visible = enabled
-	if not enabled and _state == "close":
-		put_away()
-
-func toggle() -> void:
-	if not enabled:
-		return
-	if _state == "held":
-		bring_close()
-	else:
-		put_away()
-
-func bring_close() -> void:
-	if _state == "close" or not enabled:
-		return
-	_state = "close"
-	Input.set_mouse_mode(Input.MOUSE_MODE_VISIBLE)
-	if _tween != null:
+func _tween_to(t: Transform3D) -> void:
+	if _tween:
 		_tween.kill()
 	_tween = create_tween()
-	_tween.tween_property(self, "transform", _close_xf, move_time)
-	emit_signal("phone_opened")
+	_tween.tween_property(self, "transform", t, move_time).set_trans(Tween.TRANS_QUAD).set_ease(Tween.EASE_OUT)
 
-func put_away() -> void:
-	if _state == "held":
+# ------------- Public controls -------------
+
+func next_pose() -> void:
+	# R: only move forward; never bounce back
+	if _state == "hip":
+		_go_state("held")
+	elif _state == "held":
+		_go_state("close")
+	elif _state == "close":
+		_go_state("full")
+	elif _state == "full":
+		# already full; no change
+		pass
+
+func prev_pose() -> void:
+	# T tap: step back a pose
+	if _state == "full":
+		_go_state("close")
+	elif _state == "close":
+		_go_state("held")
+	elif _state == "held":
+		_go_state("hip")
+	elif _state == "hip":
+		# already holstered
+		pass
+
+
+func holster() -> void:
+	_go_state("hip")
+
+# Called by UI: snap to full, then (after tween) emit link to Game
+func request_full_then_link(path: String) -> void:
+	_go_state("full")
+	if _tween:
+		await _tween.finished
+	phone_link_clicked.emit(path)
+
+# ------------- Internals -------------
+
+func _go_state(s: String) -> void:
+	if s == _state:
 		return
-	_state = "held"
-	Input.set_mouse_mode(Input.MOUSE_MODE_CAPTURED)
-	if _tween != null:
-		_tween.kill()
-	_tween = create_tween()
-	_tween.tween_property(self, "transform", _held_xf, move_time)
-	emit_signal("phone_closed")
+	_state = s
 
-func interact() -> void:
-	toggle()
+	if _state == "hip":
+		_set_overlay(false)
+		_tween_to(_hip_xf)
+		_unlock_mouse()
+	elif _state == "held":
+		_set_overlay(false)
+		_tween_to(_held_xf)
+		_unlock_mouse()
+	elif _state == "close":
+		_set_overlay(true)
+		_tween_to(_close_xf)
+		_lock_mouse_for_ui()
+	elif _state == "full":
+		_set_overlay(true)
+		_tween_to(_full_xf)
+		_lock_mouse_for_ui()
+
+	_emit_state()
+
+func _emit_state() -> void:
+	phone_state_changed.emit(_state)
+
+func _set_overlay(on: bool) -> void:
+	if phone_view_container:
+		phone_view_container.visible = on
+
+func _lock_mouse_for_ui() -> void:
+	if Input.get_mouse_mode() != Input.MOUSE_MODE_VISIBLE:
+		Input.set_mouse_mode(Input.MOUSE_MODE_VISIBLE)
+
+func _unlock_mouse() -> void:
+	if Input.get_mouse_mode() != Input.MOUSE_MODE_CAPTURED:
+		Input.set_mouse_mode(Input.MOUSE_MODE_CAPTURED)
 
 func _on_ui_link_clicked(path: String) -> void:
-	emit_signal("phone_link_clicked", path)
+	# UI asked to open a link: fill the screen first, then tell Game
+	request_full_then_link(path)
