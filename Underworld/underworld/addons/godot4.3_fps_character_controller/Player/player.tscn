@@ -1,0 +1,109 @@
+[gd_scene load_steps=9 format=3 uid="uid://c4lccs8l5darl"]
+
+[ext_resource type="Script" uid="uid://dmsdblns31p6w" path="res://addons/godot4.3_fps_character_controller/Player/PlayerLogic.gd" id="1_0ewp1"]
+[ext_resource type="Script" uid="uid://cxgye82mmsj3w" path="res://addons/godot4.3_fps_character_controller/Player/player_inetractcast_logic.gd" id="2_dpr1a"]
+[ext_resource type="FontFile" uid="uid://6hflm8vkdjoo" path="res://addons/godot4.3_fps_character_controller/Player/Fonts/AmaticSC-Bold.ttf" id="3_8cn8c"]
+[ext_resource type="Script" uid="uid://bcxmr22sg84xe" path="res://levels/phone.gd" id="3_vqg2k"]
+[ext_resource type="FontFile" uid="uid://h6o7nvdiwmhl" path="res://addons/godot4.3_fps_character_controller/Player/Fonts/AmaticSC-Regular.ttf" id="4_hqw2h"]
+[ext_resource type="Script" uid="uid://c100htsfmykij" path="res://levels/phone_ui.gd" id="4_uu6mv"]
+
+[sub_resource type="CapsuleShape3D" id="CapsuleShape3D_g5alh"]
+
+[sub_resource type="BoxMesh" id="BoxMesh_7ry0f"]
+size = Vector3(0.16, 0.53, 0.37)
+
+[node name="Player" type="CharacterBody3D"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1, 0)
+script = ExtResource("1_0ewp1")
+InputDictionary = {
+"Backward": "Backward",
+"Escape": "Escape",
+"Forward": "Forward",
+"Interact": "interact",
+"Jump": "Jump",
+"Left": "Left",
+"Right": "Right",
+"Sprint": "Sprint"
+}
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="."]
+shape = SubResource("CapsuleShape3D_g5alh")
+
+[node name="Head" type="Node3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.5, 0)
+
+[node name="Camera3D" type="Camera3D" parent="Head"]
+unique_name_in_owner = true
+current = true
+
+[node name="InteractRay" type="RayCast3D" parent="Head" node_paths=PackedStringArray("Prompt")]
+target_position = Vector3(0, 0, -2)
+script = ExtResource("2_dpr1a")
+Prompt = NodePath("../../UserInterface/InteracrLabelHolder/InteractLabel")
+
+[node name="Phone3D" type="Node3D" parent="Head"]
+transform = Transform3D(-4.371139e-08, 0, -1, 0, 1, 0, 1, 0, -4.371139e-08, 0.46206164, 0, -1.4867837)
+script = ExtResource("3_vqg2k")
+held_marker = NodePath("../../PhoneHeldPose")
+close_marker = NodePath("../../PhoneClosePose")
+
+[node name="MeshInstance3D" type="MeshInstance3D" parent="Head/Phone3D"]
+mesh = SubResource("BoxMesh_7ry0f")
+
+[node name="SubViewport" type="SubViewport" parent="Head/Phone3D"]
+disable_3d = true
+transparent_bg = true
+size = Vector2i(720, 1280)
+
+[node name="PhoneUI" type="Control" parent="Head/Phone3D/SubViewport"]
+layout_mode = 3
+anchors_preset = 0
+offset_right = 40.0
+offset_bottom = 40.0
+script = ExtResource("4_uu6mv")
+
+[node name="RayCast3D" type="RayCast3D" parent="Head/Phone3D"]
+transform = Transform3D(-4.3711385e-08, -1, 4.371139e-08, 1, -4.371139e-08, -4.371139e-08, 4.371139e-08, 4.371139e-08, 1, 0, 0, 0)
+
+[node name="PhoneClosePose" type="Marker3D" parent="."]
+transform = Transform3D(-4.371139e-08, 0, -1, 0, 1, 0, 1, 0, -4.371139e-08, 0.14077958, 0.5, -0.8849566)
+
+[node name="PhoneHeldPose" type="Marker3D" parent="."]
+transform = Transform3D(-0.5000001, 0, -0.86602545, 0, 1, 0, 0.86602545, 0, -0.5000001, 0.44422913, 0.23931086, -0.99764216)
+
+[node name="Tilt" type="Node3D" parent="."]
+
+[node name="LTilt" type="Marker3D" parent="Tilt"]
+
+[node name="RTilt" type="Marker3D" parent="Tilt"]
+
+[node name="UserInterface" type="CanvasLayer" parent="."]
+
+[node name="InteracrLabelHolder" type="Control" parent="UserInterface"]
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="InteractLabel" type="RichTextLabel" parent="UserInterface/InteracrLabelHolder"]
+layout_mode = 0
+offset_left = 561.0
+offset_top = 260.0
+offset_right = 591.0
+offset_bottom = 387.0
+grow_horizontal = 2
+grow_vertical = 2
+size_flags_horizontal = 4
+size_flags_vertical = 4
+theme_override_fonts/normal_font = ExtResource("4_hqw2h")
+theme_override_fonts/bold_font = ExtResource("3_8cn8c")
+theme_override_font_sizes/normal_font_size = 100
+bbcode_enabled = true
+text = "="
+fit_content = true
+autowrap_mode = 0
+shortcut_keys_enabled = false
+deselect_on_focus_loss_enabled = false
+drag_and_drop_selection_enabled = false

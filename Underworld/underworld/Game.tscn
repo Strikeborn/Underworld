@@ -1,0 +1,45 @@
+[gd_scene load_steps=3 format=3 uid="uid://diafr2r8ay86a"]
+
+[ext_resource type="PackedScene" uid="uid://c4lccs8l5darl" path="res://addons/godot4.3_fps_character_controller/Player/player.tscn" id="1_a202f"]
+[ext_resource type="Script" uid="uid://c6y7cxfe8t07" path="res://game.gd" id="1_t88pq"]
+
+[node name="Game" type="Node3D" groups=["player"]]
+process_mode = 3
+script = ExtResource("1_t88pq")
+
+[node name="Player" parent="." groups=["player"] instance=ExtResource("1_a202f")]
+unique_name_in_owner = true
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.0041751266, 1, 0.0056898594)
+
+[node name="CanvasLayer" type="CanvasLayer" parent="." groups=["player"]]
+
+[node name="Fade" type="ColorRect" parent="CanvasLayer"]
+modulate = Color(1, 1, 1, 0)
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+color = Color(0, 0, 0, 1)
+
+[node name="PhoneLayer" type="CanvasLayer" parent="."]
+visible = false
+
+[node name="PhoneView" type="SubViewportContainer" parent="PhoneLayer"]
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_right = -1200.0
+grow_horizontal = 2
+grow_vertical = 2
+stretch = true
+mouse_target = true
+
+[node name="OverlayViewport" type="SubViewport" parent="PhoneLayer/PhoneView"]
+disable_3d = true
+transparent_bg = true
+size = Vector2i(720, 1080)
+
+[node name="LevelRoot" type="Node3D" parent="." groups=["player"]]
+
+[editable path="Player"]

@@ -1,0 +1,66 @@
+[gd_scene load_steps=9 format=3 uid="uid://g8y413k0fsyq"]
+
+[sub_resource type="PlaneMesh" id="PlaneMesh_gjjlr"]
+size = Vector2(5, 5)
+
+[sub_resource type="PhysicsMaterial" id="PhysicsMaterial_gljt1"]
+
+[sub_resource type="BoxShape3D" id="BoxShape3D_f5x84"]
+size = Vector3(5, 0.14, 5)
+
+[sub_resource type="Environment" id="Environment_gjjlr"]
+
+[sub_resource type="CameraAttributesPractical" id="CameraAttributesPractical_gljt1"]
+
+[sub_resource type="Compositor" id="Compositor_f5x84"]
+
+[sub_resource type="BoxShape3D" id="BoxShape3D_gjjlr"]
+
+[sub_resource type="BoxMesh" id="BoxMesh_gljt1"]
+
+[node name="Level2" type="Node3D"]
+
+[node name="Spawn" type="Marker3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 3, 0, 6)
+
+[node name="MeshInstance3D2" type="MeshInstance3D" parent="."]
+transform = Transform3D(4.8539176, 0, 0, 0, 1, 0, 0, 0, 4.8539176, 0, 0, 0)
+mesh = SubResource("PlaneMesh_gjjlr")
+skeleton = NodePath("../../..")
+
+[node name="StaticBody3D" type="StaticBody3D" parent="MeshInstance3D2"]
+physics_material_override = SubResource("PhysicsMaterial_gljt1")
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="MeshInstance3D2/StaticBody3D"]
+transform = Transform3D(0.9999999, 0, 0, 0, 0.9999998, 0, 0, 0, 0.9999999, 0, -0.045696586, 0)
+shape = SubResource("BoxShape3D_f5x84")
+
+[node name="WorldEnvironment" type="WorldEnvironment" parent="."]
+environment = SubResource("Environment_gjjlr")
+camera_attributes = SubResource("CameraAttributesPractical_gljt1")
+compositor = SubResource("Compositor_f5x84")
+
+[node name="DirectionalLight3D" type="DirectionalLight3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 0.25881907, 0.9659258, 0, -0.9659258, 0.25881907, 0, 12.101866, 4.5443096)
+
+[node name="RigidBody3D" type="RigidBody3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.521153, 0)
+mass = 0.865
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="RigidBody3D"]
+shape = SubResource("BoxShape3D_gjjlr")
+
+[node name="MeshInstance3D2" type="MeshInstance3D" parent="RigidBody3D/CollisionShape3D"]
+mesh = SubResource("BoxMesh_gljt1")
+skeleton = NodePath("../../../../..")
+
+[node name="RigidBody3D2" type="RigidBody3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.521153, -7.3636847)
+mass = 0.865
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="RigidBody3D2"]
+shape = SubResource("BoxShape3D_gjjlr")
+
+[node name="MeshInstance3D2" type="MeshInstance3D" parent="RigidBody3D2/CollisionShape3D"]
+mesh = SubResource("BoxMesh_gljt1")
+skeleton = NodePath("../../../../..")

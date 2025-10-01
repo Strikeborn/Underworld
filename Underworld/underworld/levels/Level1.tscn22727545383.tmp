@@ -1,0 +1,106 @@
+[gd_scene load_steps=15 format=3 uid="uid://dmtbm2jj2hn4m"]
+
+[ext_resource type="Script" uid="uid://du3secivd7sar" path="res://area_3d.gd" id="1_b84ys"]
+[ext_resource type="Script" uid="uid://bcxmr22sg84xe" path="res://levels/phone.gd" id="2_32mhh"]
+[ext_resource type="Script" uid="uid://c100htsfmykij" path="res://levels/phone_ui.gd" id="3_ohbkr"]
+
+[sub_resource type="Environment" id="Environment_32mhh"]
+
+[sub_resource type="CameraAttributesPractical" id="CameraAttributesPractical_ohbkr"]
+
+[sub_resource type="Compositor" id="Compositor_2j4y6"]
+
+[sub_resource type="BoxShape3D" id="BoxShape3D_vi6ws"]
+
+[sub_resource type="BoxMesh" id="BoxMesh_cr8f5"]
+
+[sub_resource type="PlaneMesh" id="PlaneMesh_gqfrg"]
+size = Vector2(5, 5)
+
+[sub_resource type="PhysicsMaterial" id="PhysicsMaterial_dkril"]
+
+[sub_resource type="BoxShape3D" id="BoxShape3D_lbu4x"]
+size = Vector3(5, 0.14, 5)
+
+[sub_resource type="BoxShape3D" id="BoxShape3D_vcl05"]
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_nn0v1"]
+albedo_color = Color(0, 0.48235294, 1, 1)
+
+[sub_resource type="BoxMesh" id="BoxMesh_ohbkr"]
+
+[node name="Level1" type="Node3D"]
+
+[node name="Spawn" type="Marker3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 3, 0, 6)
+
+[node name="WorldEnvironment" type="WorldEnvironment" parent="."]
+environment = SubResource("Environment_32mhh")
+camera_attributes = SubResource("CameraAttributesPractical_ohbkr")
+compositor = SubResource("Compositor_2j4y6")
+
+[node name="RigidBody3D" type="RigidBody3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.521153, -2.9257932)
+mass = 0.02
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="RigidBody3D"]
+shape = SubResource("BoxShape3D_vi6ws")
+
+[node name="MeshInstance3D2" type="MeshInstance3D" parent="RigidBody3D/CollisionShape3D"]
+mesh = SubResource("BoxMesh_cr8f5")
+skeleton = NodePath("../../../../..")
+
+[node name="MeshInstance3D" type="MeshInstance3D" parent="."]
+transform = Transform3D(4.8539176, 0, 0, 0, 1, 0, 0, 0, 4.8539176, 0, 0, 0)
+mesh = SubResource("PlaneMesh_gqfrg")
+skeleton = NodePath("../../..")
+
+[node name="StaticBody3D" type="StaticBody3D" parent="MeshInstance3D"]
+physics_material_override = SubResource("PhysicsMaterial_dkril")
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="MeshInstance3D/StaticBody3D"]
+transform = Transform3D(0.9999999, 0, 0, 0, 0.9999998, 0, 0, 0, 0.9999999, 0, -0.045696586, 0)
+shape = SubResource("BoxShape3D_lbu4x")
+
+[node name="Area3D" type="Area3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -7.2239943, 0, 0)
+script = ExtResource("1_b84ys")
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="Area3D"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.77416396, 0)
+shape = SubResource("BoxShape3D_vcl05")
+
+[node name="MeshInstance3D2" type="MeshInstance3D" parent="Area3D/CollisionShape3D"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.011365414, 0.0019022226, 0)
+mesh = SubResource("BoxMesh_cr8f5")
+skeleton = NodePath("../../../RigidBody3D")
+surface_material_override/0 = SubResource("StandardMaterial3D_nn0v1")
+
+[node name="DirectionalLight3D" type="DirectionalLight3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 0.25881907, 0.9659258, 0, -0.9659258, 0.25881907, 0, 12.101866, 4.5443096)
+
+[node name="Phone" type="Node3D" parent="."]
+script = ExtResource("2_32mhh")
+held_pose = null
+close_pose = null
+move_time = null
+
+[node name="MeshInstance3D" type="MeshInstance3D" parent="Phone"]
+mesh = SubResource("BoxMesh_ohbkr")
+
+[node name="SubViewport" type="SubViewport" parent="Phone"]
+disable_3d = true
+transparent_bg = true
+size = Vector2i(720, 1280)
+
+[node name="PhoneUI" type="Control" parent="Phone/SubViewport"]
+layout_mode = 3
+anchors_preset = 0
+offset_right = 40.0
+offset_bottom = 40.0
+script = ExtResource("3_ohbkr")
+
+[node name="RayCast3D" type="RayCast3D" parent="Phone"]
+
+[connection signal="body_entered" from="Area3D" to="Area3D" method="_on_area_3d_body_entered"]
+[connection signal="body_exited" from="Area3D" to="Area3D" method="_on_body_exited"]
