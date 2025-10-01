@@ -40,12 +40,19 @@ func _on_phone_link_clicked(path: String) -> void:
 
 func _ready() -> void:
 	# connect phone events
-	if phone3d and phone3d.has_signal("phone_link_clicked"):
-		phone3d.connect("phone_link_clicked", Callable(self, "_on_phone_link_clicked"))
 	if phone3d:
-		phone3d.connect("phone_opened", _on_phone_opened)
-		phone3d.connect("phone_closed", _on_phone_closed)
-		phone3d.connect("phone_link_clicked", _on_phone_link_clicked)
+		var c_open  := Callable(self, "_on_phone_opened")
+		var c_close := Callable(self, "_on_phone_closed")
+		var c_link  := Callable(self, "_on_phone_link_clicked")
+
+		if phone3d.has_signal("phone_opened") and not phone3d.is_connected("phone_opened", c_open):
+			phone3d.connect("phone_opened", c_open)
+
+		if phone3d.has_signal("phone_closed") and not phone3d.is_connected("phone_closed", c_close):
+			phone3d.connect("phone_closed", c_close)
+
+		if phone3d.has_signal("phone_link_clicked") and not phone3d.is_connected("phone_link_clicked", c_link):
+			phone3d.connect("phone_link_clicked", c_link)
 	phone_layer.visible = false  # hidden until phone opens
 	process_mode = Node.PROCESS_MODE_ALWAYS
 	fade.modulate.a = 1.0
