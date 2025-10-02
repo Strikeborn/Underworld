@@ -1,9 +1,19 @@
-[gd_scene load_steps=13 format=3 uid="uid://dmtbm2jj2hn4m"]
+[gd_scene load_steps=16 format=3 uid="uid://dmtbm2jj2hn4m"]
 
 [ext_resource type="Script" uid="uid://du3secivd7sar" path="res://area_3d.gd" id="1_b84ys"]
+[ext_resource type="Texture2D" uid="uid://ciuyn1516bkcc" path="res://free_-_skybox_basic_sky (1)_0.jpg" id="1_ohbkr"]
 [ext_resource type="Script" uid="uid://d4b3e0opmbj78" path="res://levels/level_config.gd" id="2_32mhh"]
 
+[sub_resource type="PanoramaSkyMaterial" id="PanoramaSkyMaterial_2j4y6"]
+panorama = ExtResource("1_ohbkr")
+
+[sub_resource type="Sky" id="Sky_vi6ws"]
+sky_material = SubResource("PanoramaSkyMaterial_2j4y6")
+
 [sub_resource type="Environment" id="Environment_32mhh"]
+background_mode = 2
+sky = SubResource("Sky_vi6ws")
+sky_rotation = Vector3(-3.1415927, 0, 0)
 
 [sub_resource type="CameraAttributesPractical" id="CameraAttributesPractical_ohbkr"]
 
@@ -13,13 +23,19 @@
 
 [sub_resource type="BoxMesh" id="BoxMesh_cr8f5"]
 
-[sub_resource type="PlaneMesh" id="PlaneMesh_gqfrg"]
-size = Vector2(5, 5)
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_2j4y6"]
+albedo_color = Color(0.20268974, 0.13196015, 0.031637076, 1)
 
-[sub_resource type="PhysicsMaterial" id="PhysicsMaterial_dkril"]
+[sub_resource type="CylinderMesh" id="CylinderMesh_vi6ws"]
+material = SubResource("StandardMaterial3D_2j4y6")
+top_radius = 0.075
+bottom_radius = 0.075
+height = 6.5
+radial_segments = 24
+rings = 2
 
-[sub_resource type="BoxShape3D" id="BoxShape3D_lbu4x"]
-size = Vector3(5, 0.14, 5)
+[sub_resource type="ConvexPolygonShape3D" id="ConvexPolygonShape3D_cr8f5"]
+points = PackedVector3Array(0.0616763, 3.2645476, 0.09205608, -0.09018691, -3.2645476, -0.05980713, -0.09018691, -3.2645476, 0.0616763, -0.09018691, 3.2645476, -0.05980713, 0.0616763, -3.2645476, -0.09018691, 0.0616763, -3.2645476, 0.09205608, 0.0616763, 3.2645476, -0.09018691, -0.09018691, 3.2645476, 0.0616763)
 
 [sub_resource type="BoxShape3D" id="BoxShape3D_vcl05"]
 
@@ -29,7 +45,7 @@ albedo_color = Color(0, 0.48235294, 1, 1)
 [node name="Level1" type="Node3D"]
 
 [node name="Spawn" type="Marker3D" parent="."]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 3, 0, 6)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.44250584, 0.7895123, 2.0830646)
 
 [node name="WorldEnvironment" type="WorldEnvironment" parent="."]
 environment = SubResource("Environment_32mhh")
@@ -44,31 +60,75 @@ mass = 0.02
 shape = SubResource("BoxShape3D_vi6ws")
 
 [node name="MeshInstance3D2" type="MeshInstance3D" parent="RigidBody3D/CollisionShape3D"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -2.133484, 0, 4.019101)
 mesh = SubResource("BoxMesh_cr8f5")
 skeleton = NodePath("../../../../..")
 
-[node name="MeshInstance3D" type="MeshInstance3D" parent="."]
-transform = Transform3D(4.8539176, 0, 0, 0, 1, 0, 0, 0, 4.8539176, 0, 0, 0)
-mesh = SubResource("PlaneMesh_gqfrg")
-skeleton = NodePath("../../..")
+[node name="Raft" type="Node3D" parent="."]
 
-[node name="StaticBody3D" type="StaticBody3D" parent="MeshInstance3D"]
-physics_material_override = SubResource("PhysicsMaterial_dkril")
+[node name="Log1" type="MeshInstance3D" parent="Raft"]
+transform = Transform3D(-2.1217146e-07, -0.99999994, 0, 4.853917, -4.3711385e-08, 0, 0, 0, 4.853917, 0, 0, 2.99265)
+mesh = SubResource("CylinderMesh_vi6ws")
+skeleton = NodePath("../../../..")
 
-[node name="CollisionShape3D" type="CollisionShape3D" parent="MeshInstance3D/StaticBody3D"]
-transform = Transform3D(0.9999999, 0, 0, 0, 0.9999998, 0, 0, 0, 0.9999999, 0, -0.045696586, 0)
-shape = SubResource("BoxShape3D_lbu4x")
+[node name="StaticBody3D" type="StaticBody3D" parent="Raft/Log1"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.0070840362, -1.5030305e-09, 0)
 
-[node name="Area3D_1" type="Area3D" parent="."]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -7.2239943, 0, 0)
+[node name="CollisionShape3D" type="CollisionShape3D" parent="Raft/Log1/StaticBody3D"]
+shape = SubResource("ConvexPolygonShape3D_cr8f5")
+
+[node name="Log2" type="MeshInstance3D" parent="Raft"]
+transform = Transform3D(-2.1217146e-07, -0.99999994, 0, 4.853917, -4.3711385e-08, 0, 0, 0, 4.853917, 0, 0, 2.2814457)
+mesh = SubResource("CylinderMesh_vi6ws")
+skeleton = NodePath("../../../..")
+
+[node name="StaticBody3D" type="StaticBody3D" parent="Raft/Log2"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.0070840362, -1.5030305e-09, 0)
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="Raft/Log2/StaticBody3D"]
+shape = SubResource("ConvexPolygonShape3D_cr8f5")
+
+[node name="Log3" type="MeshInstance3D" parent="Raft"]
+transform = Transform3D(-2.1217146e-07, -0.99999994, 0, 4.853917, -4.3711385e-08, 0, 0, 0, 4.853917, 0, 0, 1.5470953)
+mesh = SubResource("CylinderMesh_vi6ws")
+skeleton = NodePath("../../../..")
+
+[node name="StaticBody3D" type="StaticBody3D" parent="Raft/Log3"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.0070840362, -1.5030305e-09, 0)
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="Raft/Log3/StaticBody3D"]
+shape = SubResource("ConvexPolygonShape3D_cr8f5")
+
+[node name="Log4" type="MeshInstance3D" parent="Raft"]
+transform = Transform3D(-2.1217146e-07, -0.99999994, 0, 4.853917, -4.3711385e-08, 0, 0, 0, 4.853917, 0, 0, 0.8598883)
+mesh = SubResource("CylinderMesh_vi6ws")
+skeleton = NodePath("../../../..")
+
+[node name="StaticBody3D" type="StaticBody3D" parent="Raft/Log4"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.0070840362, -1.5030305e-09, 0)
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="Raft/Log4/StaticBody3D"]
+shape = SubResource("ConvexPolygonShape3D_cr8f5")
+
+[node name="Log5" type="MeshInstance3D" parent="Raft"]
+transform = Transform3D(-2.1217146e-07, -0.99999994, 0, 4.853917, -4.3711385e-08, 0, 0, 0, 4.853917, 0, 0, 0.8598883)
+mesh = SubResource("CylinderMesh_vi6ws")
+skeleton = NodePath("../../../..")
+
+[node name="StaticBody3D" type="StaticBody3D" parent="Raft/Log5"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.0070840362, -1.5030305e-09, 0)
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="Raft/Log5/StaticBody3D"]
+shape = SubResource("ConvexPolygonShape3D_cr8f5")
+
+[node name="Ground" type="Area3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -3.729078, -2.086965, 1.4452107)
 script = ExtResource("1_b84ys")
 
-[node name="CollisionShape3D" type="CollisionShape3D" parent="Area3D_1"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.77416396, 0)
+[node name="CollisionShape3D_3" type="CollisionShape3D" parent="Ground"]
 shape = SubResource("BoxShape3D_vcl05")
 
-[node name="AreaMesh_1" type="MeshInstance3D" parent="Area3D_1/CollisionShape3D"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.011365414, 0.0019022226, 0)
+[node name="AreaMesh_1" type="MeshInstance3D" parent="Ground/CollisionShape3D_3"]
 mesh = SubResource("BoxMesh_cr8f5")
 skeleton = NodePath("../../../RigidBody3D")
 surface_material_override/0 = SubResource("StandardMaterial3D_nn0v1")
@@ -80,21 +140,19 @@ transform = Transform3D(1, 0, 0, 0, 0.25881907, 0.9659258, 0, -0.9659258, 0.2588
 script = ExtResource("2_32mhh")
 
 [node name="Area3D_2" type="Area3D" parent="."]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 6.6988525, 0, 0)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 4.355276, 0.46266955, 0)
 script = ExtResource("1_b84ys")
 next_level_path = "res://levels/Level3.tscn"
 
-[node name="CollisionShape3D" type="CollisionShape3D" parent="Area3D_2"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.77416396, 0)
+[node name="CollisionShape3D_2" type="CollisionShape3D" parent="Area3D_2"]
 shape = SubResource("BoxShape3D_vcl05")
 
-[node name="AreaMesh_2" type="MeshInstance3D" parent="Area3D_2/CollisionShape3D"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.011365414, 0.0019022226, 0)
+[node name="AreaMesh_2" type="MeshInstance3D" parent="Area3D_2/CollisionShape3D_2"]
 mesh = SubResource("BoxMesh_cr8f5")
 skeleton = NodePath("../../../RigidBody3D")
 surface_material_override/0 = SubResource("StandardMaterial3D_nn0v1")
 
-[connection signal="body_entered" from="Area3D_1" to="Area3D_1" method="_on_area_3d_body_entered"]
-[connection signal="body_exited" from="Area3D_1" to="Area3D_1" method="_on_body_exited"]
+[connection signal="body_entered" from="Ground" to="Ground" method="_on_area_3d_body_entered"]
+[connection signal="body_exited" from="Ground" to="Ground" method="_on_body_exited"]
 [connection signal="body_entered" from="Area3D_2" to="Area3D_2" method="_on_area_3d_body_entered"]
 [connection signal="body_exited" from="Area3D_2" to="Area3D_2" method="_on_body_exited"]

@@ -167,8 +167,15 @@ func _physics_process(delta: float) -> void:
 	
 	move_and_slide()
 		
+	# skip rigidbody pushing while cooling down
+	if _spawn_cooldown > 0.0:
+		_spawn_cooldown -= delta
+		return
+	const MIN_PUSH_SPEED := 0.4
 	var horiz_vel := Vector3(velocity.x, 0.0, velocity.z)
-
+	if horiz_vel.length() < MIN_PUSH_SPEED and direction.length() < 0.05:
+		return
+		
 	const PUSH_FORCE := 8.0
 	var move_dir := horiz_vel.normalized()
 	for i in range(get_slide_collision_count()):

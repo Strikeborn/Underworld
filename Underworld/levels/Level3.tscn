@@ -1,4 +1,12 @@
-[gd_scene load_steps=30 format=3 uid="uid://kno4sbn0g064"]
+[gd_scene load_steps=37 format=3 uid="uid://kno4sbn0g064"]
+
+[ext_resource type="PackedScene" uid="uid://b17ra0brudiql" path="res://c_7_rifle.tscn" id="1_3ns6d"]
+[ext_resource type="PackedScene" uid="uid://cbtkqnf7oeb5a" path="res://inkwell_with_feather_pen.glb" id="1_liotd"]
+[ext_resource type="PackedScene" uid="uid://c3p3q1nmrayen" path="res://microphone.glb" id="2_mmhpo"]
+[ext_resource type="PackedScene" uid="uid://dlioqck0fe6pn" path="res://molotov_cocktail_with_lighter.glb" id="3_rd3y7"]
+[ext_resource type="PackedScene" uid="uid://bai1e5yyl8k75" path="res://simple_pencil.glb" id="4_liotd"]
+[ext_resource type="Script" uid="uid://g5id4r4giaxk" path="res://levels/level_3_config.gd" id="5_mmhpo"]
+[ext_resource type="PackedScene" uid="uid://bb5rwiv4h55xi" path="res://spraypaint_can_mtn_hardcore.glb" id="7_10eaw"]
 
 [sub_resource type="BoxMesh" id="BoxMesh_kn5dl"]
 lightmap_size_hint = Vector2i(14, 21)
@@ -97,7 +105,7 @@ size = Vector3(0.255, 0.58, 1.075)
 [node name="Level3" type="Node3D"]
 
 [node name="Room" type="MeshInstance3D" parent="."]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 2.5, 0)
+transform = Transform3D(0.9999999, -0.00048766937, -0.00012806157, 0.00048767467, 0.9999999, 4.4266002e-05, 0.00012804146, -4.4324122e-05, 1, 0, 2.5, 0)
 mesh = SubResource("BoxMesh_kn5dl")
 skeleton = NodePath("")
 
@@ -106,88 +114,100 @@ skeleton = NodePath("")
 [node name="CollisionShape3D" type="CollisionShape3D" parent="Room/StaticBody3D"]
 shape = SubResource("ConcavePolygonShape3D_kn5dl")
 
-[node name="Spawn" type="Marker3D" parent="."]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1, 0)
+[node name="Lights" type="Node3D" parent="."]
 
-[node name="OmniLight3D" type="OmniLight3D" parent="."]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.058193445, 4.382251, 0)
-light_energy = 3.0
-
-[node name="OmniLight3D2" type="OmniLight3D" parent="."]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -3.4983647, 4.382251, 0)
-light_energy = 3.0
-
-[node name="OmniLight3D3" type="OmniLight3D" parent="."]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 3.3214061, 4.382251, 0)
-light_energy = 3.0
-
-[node name="SpotLight3D" type="SpotLight3D" parent="."]
+[node name="SpotLight3D" type="SpotLight3D" parent="Lights"]
 transform = Transform3D(1, 0, 0, 0, -4.371139e-08, 1, 0, -1, -4.371139e-08, 5.576366, 4.82372, 0)
 light_energy = 10.0
 
-[node name="SpotLight3D2" type="SpotLight3D" parent="."]
+[node name="SpotLight3D2" type="SpotLight3D" parent="Lights"]
 transform = Transform3D(1, 0, 0, 0, -4.371139e-08, 1, 0, -1, -4.371139e-08, -6.5944076, 4.82372, 0)
 light_energy = 10.0
 
-[node name="Pedestal_1" type="MeshInstance3D" parent="."]
+[node name="OmniLight3D" type="OmniLight3D" parent="Lights"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.058193445, 4.382251, 0)
+light_energy = 3.0
+
+[node name="OmniLight3D2" type="OmniLight3D" parent="Lights"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -3.4983647, 4.382251, 0)
+light_energy = 3.0
+
+[node name="OmniLight3D3" type="OmniLight3D" parent="Lights"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 3.3214061, 4.382251, 0)
+light_energy = 3.0
+
+[node name="Inkwell" parent="Lights" instance=ExtResource("1_liotd")]
+transform = Transform3D(-2.6799347, 0, -2.6799347, 0, 3.79, 0, 2.6799347, 0, -2.6799347, -2.8784041, 1.0378901, 2.8626647)
+
+[node name="Spawn" type="Marker3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1, 0)
+
+[node name="Pedestals" type="Node3D" parent="."]
+
+[node name="Pedestal_1" type="MeshInstance3D" parent="Pedestals"]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -5.7030582, 0.37734127, 0)
 mesh = SubResource("CylinderMesh_kn5dl")
+skeleton = NodePath("../..")
 
-[node name="MeshInstance3D" type="MeshInstance3D" parent="Pedestal_1"]
+[node name="MeshInstance3D" type="MeshInstance3D" parent="Pedestals/Pedestal_1"]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.31037998, 0)
 mesh = SubResource("BoxMesh_gq8fh")
 
-[node name="MeshInstance3D2" type="MeshInstance3D" parent="Pedestal_1"]
+[node name="MeshInstance3D2" type="MeshInstance3D" parent="Pedestals/Pedestal_1"]
 transform = Transform3D(0.70710677, 0, 0.70710677, 0, 1, 0, -0.70710677, 0, 0.70710677, 0, 0.31037998, 0)
 mesh = SubResource("BoxMesh_gq8fh")
 
-[node name="StaticBody3D" type="StaticBody3D" parent="Pedestal_1"]
+[node name="StaticBody3D" type="StaticBody3D" parent="Pedestals/Pedestal_1"]
 
-[node name="CollisionShape3D" type="CollisionShape3D" parent="Pedestal_1/StaticBody3D"]
+[node name="CollisionShape3D" type="CollisionShape3D" parent="Pedestals/Pedestal_1/StaticBody3D"]
 shape = SubResource("ConvexPolygonShape3D_11ac5")
 
-[node name="Pedestal_2" type="MeshInstance3D" parent="."]
+[node name="Pedestal_2" type="MeshInstance3D" parent="Pedestals"]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 6.2883644, 0.37734127, 0)
 mesh = SubResource("CylinderMesh_kn5dl")
+skeleton = NodePath("../..")
 
-[node name="MeshInstance3D" type="MeshInstance3D" parent="Pedestal_2"]
+[node name="MeshInstance3D" type="MeshInstance3D" parent="Pedestals/Pedestal_2"]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.31037998, 0)
 mesh = SubResource("BoxMesh_gq8fh")
 
-[node name="MeshInstance3D2" type="MeshInstance3D" parent="Pedestal_2"]
+[node name="MeshInstance3D2" type="MeshInstance3D" parent="Pedestals/Pedestal_2"]
 transform = Transform3D(0.70710677, 0, 0.70710677, 0, 1, 0, -0.70710677, 0, 0.70710677, 0, 0.31037998, 0)
 mesh = SubResource("BoxMesh_gq8fh")
 
-[node name="StaticBody3D" type="StaticBody3D" parent="Pedestal_2"]
+[node name="StaticBody3D" type="StaticBody3D" parent="Pedestals/Pedestal_2"]
 
-[node name="CollisionShape3D" type="CollisionShape3D" parent="Pedestal_2/StaticBody3D"]
+[node name="CollisionShape3D" type="CollisionShape3D" parent="Pedestals/Pedestal_2/StaticBody3D"]
 shape = SubResource("ConvexPolygonShape3D_11ac5")
 
-[node name="Table1" type="MeshInstance3D" parent="."]
+[node name="Table1" type="MeshInstance3D" parent="Pedestals"]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 3.5545797, 0.53222823, 2.8937225)
 mesh = SubResource("BoxMesh_r8psn")
+skeleton = NodePath("../..")
 
-[node name="StaticBody3D" type="StaticBody3D" parent="Table1"]
+[node name="StaticBody3D" type="StaticBody3D" parent="Pedestals/Table1"]
 
-[node name="CollisionShape3D" type="CollisionShape3D" parent="Table1/StaticBody3D"]
+[node name="CollisionShape3D" type="CollisionShape3D" parent="Pedestals/Table1/StaticBody3D"]
 shape = SubResource("ConvexPolygonShape3D_3ns6d")
 
-[node name="Table2" type="MeshInstance3D" parent="."]
+[node name="Table2" type="MeshInstance3D" parent="Pedestals"]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.019927025, 0.53222823, 2.8937225)
 mesh = SubResource("BoxMesh_r8psn")
+skeleton = NodePath("../..")
 
-[node name="StaticBody3D" type="StaticBody3D" parent="Table2"]
+[node name="StaticBody3D" type="StaticBody3D" parent="Pedestals/Table2"]
 
-[node name="CollisionShape3D" type="CollisionShape3D" parent="Table2/StaticBody3D"]
+[node name="CollisionShape3D" type="CollisionShape3D" parent="Pedestals/Table2/StaticBody3D"]
 shape = SubResource("ConvexPolygonShape3D_3ns6d")
 
-[node name="Table3" type="MeshInstance3D" parent="."]
+[node name="Table3" type="MeshInstance3D" parent="Pedestals"]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -3.501543, 0.53222823, 2.8937225)
 mesh = SubResource("BoxMesh_r8psn")
+skeleton = NodePath("../..")
 
-[node name="StaticBody3D" type="StaticBody3D" parent="Table3"]
+[node name="StaticBody3D" type="StaticBody3D" parent="Pedestals/Table3"]
 
-[node name="CollisionShape3D" type="CollisionShape3D" parent="Table3/StaticBody3D"]
+[node name="CollisionShape3D" type="CollisionShape3D" parent="Pedestals/Table3/StaticBody3D"]
 shape = SubResource("ConvexPolygonShape3D_3ns6d")
 
 [node name="Boat" type="Node3D" parent="."]
@@ -289,3 +309,21 @@ transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 4.3741794, 1.6991109, 0)
 
 [node name="CollisionShape3D" type="CollisionShape3D" parent="Boat/Front_of_boat"]
 shape = SubResource("BoxShape3D_lwl86")
+
+[node name="C7 Rifle" parent="." instance=ExtResource("1_3ns6d")]
+transform = Transform3D(0.5, 0, 0, 0, 0.5, 0, 0, 0, 0.5, -0.20145625, 1.7543716, 2.8270633)
+
+[node name="Microphone" parent="." instance=ExtResource("2_mmhpo")]
+transform = Transform3D(0.12, 0, 0, 0, -5.2453664e-09, 0.12, 0, -0.12, -5.2453664e-09, 6.137479, 1.289107, 0)
+
+[node name="Molotov cocktail" parent="." instance=ExtResource("3_rd3y7")]
+transform = Transform3D(0.1, 0, -4.229421e-16, 0, 0.1, 0, 4.229421e-16, 0, 0.1, -5.720954, 0.36615777, -0.3689227)
+
+[node name="Pencil" parent="." instance=ExtResource("4_liotd")]
+transform = Transform3D(0.054999985, 0.0952628, 0, -0.0952628, 0.054999985, 0, 0, 0, 0.11, 3.4798603, 1.601109, 2.9279056)
+
+[node name="Level3Config" type="Node" parent="."]
+script = ExtResource("5_mmhpo")
+
+[node name="Spraycan" parent="." instance=ExtResource("7_10eaw")]
+transform = Transform3D(-1.547063, 0, 0.9681018, 0, 1.825, 0, -0.9681018, 0, -1.547063, -3.9427662, 1.0646777, 2.815253)

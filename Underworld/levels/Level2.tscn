@@ -1,12 +1,17 @@
-[gd_scene load_steps=9 format=3 uid="uid://g8y413k0fsyq"]
+[gd_scene load_steps=12 format=3 uid="uid://g8y413k0fsyq"]
 
-[sub_resource type="PlaneMesh" id="PlaneMesh_gjjlr"]
-size = Vector2(5, 5)
+[ext_resource type="Script" uid="uid://crbbt5h1edwov" path="res://levels/level_2_config.gd" id="1_gljt1"]
+[ext_resource type="PackedScene" uid="uid://d3s0jvl0er7io" path="res://shadow_figure.glb" id="2_432n0"]
+[ext_resource type="PackedScene" uid="uid://diajkk0sivru6" path="res://old_fat_man_character_full_rig.glb" id="3_1hrej"]
+[ext_resource type="PackedScene" uid="uid://b62yywsl6xs5v" path="res://low_poly_base_mesh-530_tri.glb" id="4_1hrej"]
 
-[sub_resource type="PhysicsMaterial" id="PhysicsMaterial_gljt1"]
+[sub_resource type="BoxMesh" id="BoxMesh_gjjlr"]
+lightmap_size_hint = Vector2i(14, 21)
+flip_faces = true
+size = Vector3(30, 15, 30)
 
-[sub_resource type="BoxShape3D" id="BoxShape3D_f5x84"]
-size = Vector3(5, 0.14, 5)
+[sub_resource type="ConcavePolygonShape3D" id="ConcavePolygonShape3D_432n0"]
+data = PackedVector3Array(15, 7.5, 15, -15, 7.5, 15, -15, -7.5, 15, 15, -7.5, 15, 15, 7.5, 15, -15, -7.5, 15, -15, 7.5, -15, 15, 7.5, -15, 15, -7.5, -15, -15, -7.5, -15, -15, 7.5, -15, 15, -7.5, -15, 15, 7.5, -15, 15, 7.5, 15, 15, -7.5, 15, 15, -7.5, -15, 15, 7.5, -15, 15, -7.5, 15, -15, 7.5, 15, -15, 7.5, -15, -15, -7.5, -15, -15, -7.5, 15, -15, 7.5, 15, -15, -7.5, -15, -15, 7.5, 15, 15, 7.5, 15, 15, 7.5, -15, -15, 7.5, -15, -15, 7.5, 15, 15, 7.5, -15, 15, -7.5, 15, -15, -7.5, 15, -15, -7.5, -15, 15, -7.5, -15, 15, -7.5, 15, -15, -7.5, -15)
 
 [sub_resource type="Environment" id="Environment_gjjlr"]
 
@@ -20,20 +25,18 @@ size = Vector3(5, 0.14, 5)
 
 [node name="Level2" type="Node3D"]
 
+[node name="Room" type="MeshInstance3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 7.4289513, 0)
+mesh = SubResource("BoxMesh_gjjlr")
+skeleton = NodePath("")
+
+[node name="StaticBody3D" type="StaticBody3D" parent="Room"]
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="Room/StaticBody3D"]
+shape = SubResource("ConcavePolygonShape3D_432n0")
+
 [node name="Spawn" type="Marker3D" parent="."]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 3, 0, 6)
-
-[node name="MeshInstance3D2" type="MeshInstance3D" parent="."]
-transform = Transform3D(4.8539176, 0, 0, 0, 1, 0, 0, 0, 4.8539176, 0, 0, 0)
-mesh = SubResource("PlaneMesh_gjjlr")
-skeleton = NodePath("../../..")
-
-[node name="StaticBody3D" type="StaticBody3D" parent="MeshInstance3D2"]
-physics_material_override = SubResource("PhysicsMaterial_gljt1")
-
-[node name="CollisionShape3D" type="CollisionShape3D" parent="MeshInstance3D2/StaticBody3D"]
-transform = Transform3D(0.9999999, 0, 0, 0, 0.9999998, 0, 0, 0, 0.9999999, 0, -0.045696586, 0)
-shape = SubResource("BoxShape3D_f5x84")
 
 [node name="WorldEnvironment" type="WorldEnvironment" parent="."]
 environment = SubResource("Environment_gjjlr")
@@ -64,3 +67,44 @@ shape = SubResource("BoxShape3D_gjjlr")
 [node name="MeshInstance3D2" type="MeshInstance3D" parent="RigidBody3D2/CollisionShape3D"]
 mesh = SubResource("BoxMesh_gljt1")
 skeleton = NodePath("../../../../..")
+
+[node name="Level2Config" type="Node" parent="."]
+script = ExtResource("1_gljt1")
+
+[node name="Lights" type="Node3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 7.1055255, 0)
+
+[node name="SpotLight3D" type="SpotLight3D" parent="Lights"]
+transform = Transform3D(1, 0, 0, 0, -4.371139e-08, 1, 0, -1, -4.371139e-08, 5.576366, 4.82372, 0)
+light_energy = 10.0
+
+[node name="SpotLight3D2" type="SpotLight3D" parent="Lights"]
+transform = Transform3D(1, 0, 0, 0, -4.371139e-08, 1, 0, -1, -4.371139e-08, -6.5944076, 4.82372, 0)
+light_energy = 10.0
+
+[node name="OmniLight3D" type="OmniLight3D" parent="Lights"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.058193445, 4.382251, 0)
+light_energy = 3.0
+
+[node name="OmniLight3D2" type="OmniLight3D" parent="Lights"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -3.4983647, 4.382251, 0)
+light_energy = 3.0
+
+[node name="OmniLight3D3" type="OmniLight3D" parent="Lights"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 3.3214061, 4.382251, 0)
+light_energy = 3.0
+
+[node name="Shadow Creature" parent="." instance=ExtResource("2_432n0")]
+transform = Transform3D(0.24, 0, 0, 0, 0.24, 0, 0, 0, 0.24, -13.712237, 0, -11.698834)
+
+[node name="Old fat man" parent="." instance=ExtResource("3_1hrej")]
+transform = Transform3D(0.365, 0, 0, 0, 0.365, 0, 0, 0, 0.365, 5.9260044, 0, -11.979896)
+
+[node name="Person" parent="." instance=ExtResource("4_1hrej")]
+transform = Transform3D(0.015, 0, 0, 0, 0.015, 0, 0, 0, 0.015, -4.8789163, 0, 0)
+
+[node name="de8d3af3f2ef40fcae709f7a4aa579d3_fbx" parent="Person/Sketchfab_model" index="0"]
+transform = Transform3D(1, 0, 0, 0, -4.371139e-08, -1, 0, 1, -4.371139e-08, 0, 0, 0)
+
+[editable path="Old fat man"]
+[editable path="Person"]

@@ -3,12 +3,14 @@ extends Node3D
 signal phone_state_changed(state: String)
 signal phone_link_clicked(path: String)   # relay to Game after “full” tween
 @export var move_time := 0.20
-
+@onready var ui_world_vp: SubViewport = %SubViewport          # Player/Phone3D/SubViewport
+@onready var ui_overlay_vp: SubViewport = %OverlayViewport     # Game/PhoneLayer/OverlayViewport
+@onready var phone_view: SubViewportContainer = %PhoneView     # Game/PhoneLayer/PhoneView
 @export var hip_marker: NodePath
 @export var held_marker: NodePath
 @export var close_marker: NodePath
 @export var full_marker: NodePath   # optional; if empty, we’ll reuse close
-
+@onready var phone3d: Node3D = $Phone3D
 @onready var head: Node3D = $".."
 @onready var phone_view_container: CanvasItem = get_node_or_null("/root/Game/PhoneLayer/PhoneView")
 @onready var phone_vp: SubViewport = $SubViewport
@@ -22,22 +24,33 @@ var _state := "hip"        # "hip" | "held" | "close" | "full"
 var _tween: Tween = null
 
 func _ready() -> void:
-	if phone_view_container != null and phone_vp != null:
-		# show this SubViewport inside the overlay container
-		# make sure UI input is allowed
-		phone_vp.gui_disable_input = false
-		# IMPORTANT: let controls INSIDE the SubViewport be the mouse target,
-		# not the container itself (so clicks hit your buttons/labels)
-		phone_view_container.mouse_target = false
-		# (optional) always update while up
-		phone_vp.render_target_update_mode = SubViewport.UPDATE_ALWAYS
+	# If editor wiring is missing, try to resolve by name safely.
+	if phone_view_container == null:
+		phone_view_container = get_tree().get_root().find_child("PhoneView", true, false) as SubViewportContainer
+	if ui_overlay_vp == null:
+		ui_overlay_vp = get_tree().get_root().find_child("OverlayViewport", true, false) as SubViewport
+
+	# Bind container->viewport only if both exist (avoids the "null instance" error)
+	if phone_view_container != null and ui_overlay_vp != null and phone_view_container.subviewport == null:
+		phone_view_container.subviewport = ui_overlay_vp
+
+	# Make sure the overlay viewport actually renders and receives UI
+	if ui_overlay_vp != null:
+		ui_overlay_vp.render_target_update_mode = SubViewport.UPDATE_ALWAYS
+		ui_overlay_vp.gui_disable_input = false
+	if phone_view_container != null:
+		phone_view_container.mouse_target = true
+
+	# Connect clickable links in the phone UI if present
+	var label := phone_ui.get_node_or_null("RichTextLabel") as RichTextLabel
+	if label != null and not label.is_connected("meta_clicked", Callable(self, "_on_phone_meta_clicked")):
+		label.connect("meta_clicked", Callable(self, "_on_phone_meta_clicked"))
 	# Cache local transforms from markers (markers live under Head, same space as Phone3D)
 	_hip_xf   = _xf_from_marker(hip_marker,  Vector3(0.15, -0.35,  0.15))
 	_held_xf  = _xf_from_marker(held_marker, Vector3(0.30, -0.12, -0.45))
 	_close_xf = _xf_from_marker(close_marker,Vector3(0.15, -0.05, -0.30))
 	var full_default := Vector3(0.00, -0.02, -0.20)
 	_full_xf  = _xf_from_marker(full_marker, full_default)
-	var label := %RichTextLabel	# or get_node("%RichTextLabel") if you named it uniquely
 	if label and not label.is_connected("meta_clicked", Callable(self, "_on_phone_meta_clicked")):
 		label.connect("meta_clicked", Callable(self, "_on_phone_meta_clicked"))
 	# Start holstered at hip
@@ -118,7 +131,7 @@ func _go_state(s: String) -> void:
 	if s == _state:
 		return
 	_state = s
-
+	
 	if _state == "hip":
 		_set_overlay(false)
 		_tween_to(_hip_xf)
@@ -135,8 +148,26 @@ func _go_state(s: String) -> void:
 		_set_overlay(true)
 		_tween_to(_full_xf)
 		_lock_mouse_for_ui()
+	match _state:
+		"hip", "held":
+			_move_ui_to_world()
+		"close", "full":
+			_move_ui_to_overlay()
 
 	_emit_state()
+
+func _move_ui_to_overlay() -> void:
+	if phone_ui != null and phone_ui.get_parent() != ui_overlay_vp:
+		phone_ui.reparent(ui_overlay_vp)   # Godot 4 keeps signals
+	ui_overlay_vp.gui_disable_input = false
+	phone_view.visible = true
+	Input.set_mouse_mode(Input.MOUSE_MODE_VISIBLE)
+
+func _move_ui_to_world() -> void:
+	if phone_ui != null and phone_ui.get_parent() != phone_vp:
+		phone_ui.reparent(phone_vp)
+	phone_view.visible = false
+	# mouse mode will be managed by your open/close logic
 
 func _emit_state() -> void:
 	phone_state_changed.emit(_state)

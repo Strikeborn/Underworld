@@ -1,0 +1,5 @@
+[gd_scene load_steps=2 format=3 uid="uid://b17ra0brudiql"]
+
+[ext_resource type="PackedScene" uid="uid://mwq12vjssbic" path="res://low-poly_colt_c7a2.glb" id="1_kfs4w"]
+
+[node name="C7 Rifle" instance=ExtResource("1_kfs4w")]
