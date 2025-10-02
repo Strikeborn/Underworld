@@ -23,6 +23,28 @@ var _close_xf: Transform3D
 var _full_xf: Transform3D
 var _state := "hip"        # "hip" | "held" | "close" | "full"
 var _tween: Tween = null
+# --- helpers ---------------------------------------------------------------
+
+# True when the phone is presented (player is using/seeing it)
+func phone_is_open() -> bool:
+	return _state == "close" or _state == "full"
+
+# Decide whether this level wants the “buzz to check phone” behaviour.
+# Tries Game.current_level_id() first; falls back to a LevelConfig node flag.
+func _should_buzz() -> bool:
+	# Prefer an explicit id from Game (set when levels load)
+	var game := get_node_or_null("/root/Game")
+	if game and game.has_method("current_level_id"):
+		return game.current_level_id() == "Level1"
+
+	# Fallback: look for a LevelConfig node on the active level instance
+	var lr := get_node_or_null("/root/Game/LevelRoot")
+	if lr and lr.get_child_count() > 0:
+		var lvl := lr.get_child(0)
+		var cfg := lvl.get_node_or_null("LevelConfig")
+		if cfg and "buzz_on_start" in cfg:
+			return cfg.buzz_on_start
+	return false
 
 func _ready() -> void:
 	# Fallbacks if Unique names were missed
@@ -63,20 +85,19 @@ func _xf_from_marker(path: NodePath, fallback_pos: Vector3) -> Transform3D:
 	return Transform3D(Basis(), fallback_pos)
 var _buzz_timer := 0.0
 const BUZZ_PERIOD := 2.0  # seconds between buzzes (start large, shrink later)
-func phone_is_open() -> bool:
-	# however you expose state from phone.gd; e.g.:
-	return phone_state == "close" or phone_state == "full"
 
 func _process(delta: float) -> void:
-	# Only on Level1 and only if phone is not close/full
-	if current_level_name() == "Level1" and not phone_is_open():
+	# Only when the level asks for it AND the phone isn't open
+	if _should_buzz() and not phone_is_open():
 		_buzz_timer -= delta
 		if _buzz_timer <= 0.0:
-			if buzz: buzz.play()
-			# make buzzing faster gradually (clamped)
+			if buzz:
+				buzz.play()
+			# make buzzing a bit faster, but clamp so it never gets silly
 			_buzz_timer = max(0.6, BUZZ_PERIOD * 0.85)
 	else:
-		_buzz_timer = 0.0  # reset when open or not level1
+		_buzz_timer = 0.0  # reset whenever not buzzing
+
 func _apply_transform_immediate(t: Transform3D) -> void:
 	if _tween:
 		_tween.kill()
@@ -181,6 +202,8 @@ func _set_overlay(on: bool) -> void:
 func _lock_mouse_for_ui() -> void:
 	if Input.get_mouse_mode() != Input.MOUSE_MODE_VISIBLE:
 		Input.set_mouse_mode(Input.MOUSE_MODE_VISIBLE)
+	if buzz and buzz.playing:
+		buzz.stop()
 
 func _unlock_mouse() -> void:
 	if Input.get_mouse_mode() != Input.MOUSE_MODE_CAPTURED:

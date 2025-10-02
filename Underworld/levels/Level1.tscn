@@ -1,4 +1,4 @@
-[gd_scene load_steps=16 format=3 uid="uid://dmtbm2jj2hn4m"]
+[gd_scene load_steps=15 format=3 uid="uid://dmtbm2jj2hn4m"]
 
 [ext_resource type="Script" uid="uid://du3secivd7sar" path="res://area_3d.gd" id="1_b84ys"]
 [ext_resource type="Texture2D" uid="uid://ciuyn1516bkcc" path="res://free_-_skybox_basic_sky (1)_0.jpg" id="1_ohbkr"]
@@ -19,10 +19,6 @@ sky_rotation = Vector3(-3.1415927, 0, 0)
 
 [sub_resource type="Compositor" id="Compositor_2j4y6"]
 
-[sub_resource type="BoxShape3D" id="BoxShape3D_vi6ws"]
-
-[sub_resource type="BoxMesh" id="BoxMesh_cr8f5"]
-
 [sub_resource type="StandardMaterial3D" id="StandardMaterial3D_2j4y6"]
 albedo_color = Color(0.20268974, 0.13196015, 0.031637076, 1)
 
@@ -39,6 +35,9 @@ points = PackedVector3Array(0.0616763, 3.2645476, 0.09205608, -0.09018691, -3.26
 
 [sub_resource type="BoxShape3D" id="BoxShape3D_vcl05"]
 
+[sub_resource type="BoxMesh" id="BoxMesh_cr8f5"]
+size = Vector3(17.255, 1, 10.47)
+
 [sub_resource type="StandardMaterial3D" id="StandardMaterial3D_nn0v1"]
 albedo_color = Color(0, 0.48235294, 1, 1)
 
@@ -51,18 +50,6 @@ transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.44250584, 0.7895123, 2.083
 environment = SubResource("Environment_32mhh")
 camera_attributes = SubResource("CameraAttributesPractical_ohbkr")
 compositor = SubResource("Compositor_2j4y6")
-
-[node name="RigidBody3D" type="RigidBody3D" parent="."]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.521153, -2.9257932)
-mass = 0.02
-
-[node name="CollisionShape3D" type="CollisionShape3D" parent="RigidBody3D"]
-shape = SubResource("BoxShape3D_vi6ws")
-
-[node name="MeshInstance3D2" type="MeshInstance3D" parent="RigidBody3D/CollisionShape3D"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -2.133484, 0, 4.019101)
-mesh = SubResource("BoxMesh_cr8f5")
-skeleton = NodePath("../../../../..")
 
 [node name="Raft" type="Node3D" parent="."]
 
@@ -129,8 +116,9 @@ script = ExtResource("1_b84ys")
 shape = SubResource("BoxShape3D_vcl05")
 
 [node name="AreaMesh_1" type="MeshInstance3D" parent="Ground/CollisionShape3D_3"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 4.9078674, 0, 0)
 mesh = SubResource("BoxMesh_cr8f5")
-skeleton = NodePath("../../../RigidBody3D")
+skeleton = NodePath("")
 surface_material_override/0 = SubResource("StandardMaterial3D_nn0v1")
 
 [node name="DirectionalLight3D" type="DirectionalLight3D" parent="."]
@@ -139,20 +127,5 @@ transform = Transform3D(1, 0, 0, 0, 0.25881907, 0.9659258, 0, -0.9659258, 0.2588
 [node name="LevelConfig" type="Node" parent="."]
 script = ExtResource("2_32mhh")
 
-[node name="Area3D_2" type="Area3D" parent="."]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 4.355276, 0.46266955, 0)
-script = ExtResource("1_b84ys")
-next_level_path = "res://levels/Level3.tscn"
-
-[node name="CollisionShape3D_2" type="CollisionShape3D" parent="Area3D_2"]
-shape = SubResource("BoxShape3D_vcl05")
-
-[node name="AreaMesh_2" type="MeshInstance3D" parent="Area3D_2/CollisionShape3D_2"]
-mesh = SubResource("BoxMesh_cr8f5")
-skeleton = NodePath("../../../RigidBody3D")
-surface_material_override/0 = SubResource("StandardMaterial3D_nn0v1")
-
 [connection signal="body_entered" from="Ground" to="Ground" method="_on_area_3d_body_entered"]
 [connection signal="body_exited" from="Ground" to="Ground" method="_on_body_exited"]
-[connection signal="body_entered" from="Area3D_2" to="Area3D_2" method="_on_area_3d_body_entered"]
-[connection signal="body_exited" from="Area3D_2" to="Area3D_2" method="_on_body_exited"]

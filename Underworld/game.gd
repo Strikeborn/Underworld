@@ -19,7 +19,10 @@ var to_unfreeze: Array[RigidBody3D] = []
 @onready var phone_vp: SubViewport = $Player/Head/Phone3D/SubViewport
 @onready var phone_ui: Control = $Player/Head/Phone3D/SubViewport/PhoneUI
 @onready var phone_layer: CanvasLayer = $PhoneLayer
+var _current_level_id := ""
 
+func current_level_id() -> String:
+	return _current_level_id
 func _prepare_player_for_spawn() -> void:
 	_saved_layer = player.collision_layer
 	_saved_mask  = player.collision_mask
@@ -175,7 +178,7 @@ func load_level(path: String, do_fade := true) -> void:
 
 	var inst: Node = packed.instantiate()
 	level_root.add_child(inst)
-
+	_current_level_id = inst.name  # e.g. "Level1", "Level2", …
 	await get_tree().process_frame  # still paused
 
 	# Place exactly on Spawn BEFORE any physics ever runs
