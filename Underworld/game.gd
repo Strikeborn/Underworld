@@ -95,6 +95,24 @@ func _on_phone_closed() -> void:
 		phone_ui.get_parent().remove_child(phone_ui)
 		phone_vp.add_child(phone_ui)
 	phone_layer.visible = false
+# game.gd
+
+func _on_phone_state_changed(state: String) -> void:
+	var ui_up := (state == "close" or state == "full")
+
+	# overlay visibility
+	if phone_layer:
+		phone_layer.visible = ui_up   # your CanvasLayer with PhoneView under it
+
+	# mouse cursor mode
+	if ui_up:
+		Input.set_mouse_mode(Input.MOUSE_MODE_VISIBLE)
+	else:
+		Input.set_mouse_mode(Input.MOUSE_MODE_CAPTURED)
+
+	# freeze player walking while UI is up (optional, if not done already)
+	if player and player.has_method("set_move_locked"):
+		player.set_move_locked(ui_up)
 
 func _find_first_camera3d_under(n: Node) -> Camera3D:
 	if n is Camera3D:

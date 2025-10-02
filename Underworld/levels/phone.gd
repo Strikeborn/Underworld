@@ -2,7 +2,6 @@ extends Node3D
 
 signal phone_state_changed(state: String)
 signal phone_link_clicked(path: String)   # relay to Game after “full” tween
-
 @export var move_time := 0.20
 
 @export var hip_marker: NodePath
@@ -23,17 +22,35 @@ var _state := "hip"        # "hip" | "held" | "close" | "full"
 var _tween: Tween = null
 
 func _ready() -> void:
+	if phone_view_container != null and phone_vp != null:
+		# show this SubViewport inside the overlay container
+		# make sure UI input is allowed
+		phone_vp.gui_disable_input = false
+		# IMPORTANT: let controls INSIDE the SubViewport be the mouse target,
+		# not the container itself (so clicks hit your buttons/labels)
+		phone_view_container.mouse_target = false
+		# (optional) always update while up
+		phone_vp.render_target_update_mode = SubViewport.UPDATE_ALWAYS
 	# Cache local transforms from markers (markers live under Head, same space as Phone3D)
 	_hip_xf   = _xf_from_marker(hip_marker,  Vector3(0.15, -0.35,  0.15))
 	_held_xf  = _xf_from_marker(held_marker, Vector3(0.30, -0.12, -0.45))
 	_close_xf = _xf_from_marker(close_marker,Vector3(0.15, -0.05, -0.30))
 	var full_default := Vector3(0.00, -0.02, -0.20)
 	_full_xf  = _xf_from_marker(full_marker, full_default)
-
+	var label := %RichTextLabel	# or get_node("%RichTextLabel") if you named it uniquely
+	if label and not label.is_connected("meta_clicked", Callable(self, "_on_phone_meta_clicked")):
+		label.connect("meta_clicked", Callable(self, "_on_phone_meta_clicked"))
 	# Start holstered at hip
 	_apply_transform_immediate(_hip_xf)
 	_set_overlay(false)
 	_emit_state()
+
+func _on_phone_meta_clicked(meta: Variant) -> void:
+	# meta is whatever you put in [url=...]
+	if typeof(meta) == TYPE_STRING:
+		var path := String(meta)
+		# if we're not yet in "full", go full first then follow link
+		request_full_then_link(path)	# uses your existing flow to call Game.load_level after full
 
 	# UI: when a link is clicked, go full first, then relay after tween
 	if phone_ui and phone_ui.has_signal("link_clicked"):

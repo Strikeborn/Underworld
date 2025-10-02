@@ -59,15 +59,15 @@ physics_material_override = SubResource("PhysicsMaterial_dkril")
 transform = Transform3D(0.9999999, 0, 0, 0, 0.9999998, 0, 0, 0, 0.9999999, 0, -0.045696586, 0)
 shape = SubResource("BoxShape3D_lbu4x")
 
-[node name="Area3D" type="Area3D" parent="."]
+[node name="Area3D_1" type="Area3D" parent="."]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -7.2239943, 0, 0)
 script = ExtResource("1_b84ys")
 
-[node name="CollisionShape3D" type="CollisionShape3D" parent="Area3D"]
+[node name="CollisionShape3D" type="CollisionShape3D" parent="Area3D_1"]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.77416396, 0)
 shape = SubResource("BoxShape3D_vcl05")
 
-[node name="MeshInstance3D2" type="MeshInstance3D" parent="Area3D/CollisionShape3D"]
+[node name="AreaMesh_1" type="MeshInstance3D" parent="Area3D_1/CollisionShape3D"]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.011365414, 0.0019022226, 0)
 mesh = SubResource("BoxMesh_cr8f5")
 skeleton = NodePath("../../../RigidBody3D")
@@ -79,5 +79,22 @@ transform = Transform3D(1, 0, 0, 0, 0.25881907, 0.9659258, 0, -0.9659258, 0.2588
 [node name="LevelConfig" type="Node" parent="."]
 script = ExtResource("2_32mhh")
 
-[connection signal="body_entered" from="Area3D" to="Area3D" method="_on_area_3d_body_entered"]
-[connection signal="body_exited" from="Area3D" to="Area3D" method="_on_body_exited"]
+[node name="Area3D_2" type="Area3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 6.6988525, 0, 0)
+script = ExtResource("1_b84ys")
+next_level_path = "res://levels/Level3.tscn"
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="Area3D_2"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.77416396, 0)
+shape = SubResource("BoxShape3D_vcl05")
+
+[node name="AreaMesh_2" type="MeshInstance3D" parent="Area3D_2/CollisionShape3D"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.011365414, 0.0019022226, 0)
+mesh = SubResource("BoxMesh_cr8f5")
+skeleton = NodePath("../../../RigidBody3D")
+surface_material_override/0 = SubResource("StandardMaterial3D_nn0v1")
+
+[connection signal="body_entered" from="Area3D_1" to="Area3D_1" method="_on_area_3d_body_entered"]
+[connection signal="body_exited" from="Area3D_1" to="Area3D_1" method="_on_body_exited"]
+[connection signal="body_entered" from="Area3D_2" to="Area3D_2" method="_on_area_3d_body_entered"]
+[connection signal="body_exited" from="Area3D_2" to="Area3D_2" method="_on_body_exited"]
