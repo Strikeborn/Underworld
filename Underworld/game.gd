@@ -4,7 +4,10 @@ extends Node3D
 
 @onready var level_root: Node3D = $LevelRoot
 @onready var fade: ColorRect = $CanvasLayer/Fade
+@onready var phone_buzz: AudioStreamPlayer = $PhoneLayer/PhoneBuzz
 
+var phone_can_buzz := true     # enabled on Level1 only
+var phone_is_close := false
 @onready var player: CharacterBody3D = $Player
 @onready var player_cam: Camera3D = $Player/Head/Camera3D
 var _saved_layer := 0
@@ -32,11 +35,22 @@ func _finish_player_spawn() -> void:
 		player.velocity = Vector3.ZERO
 
 func _on_phone_link_clicked(path: String) -> void:
+	phone_can_buzz = false   # stop buzzing once they actually click a link
+	_update_buzz()
+	load_level(path)          # your existing loader
 	# example: path is a level path like "res://levels/Pac2D.tscn"
 	await load_level(path, true)  # your existing loader & fade
 	# Optional: after switching to 2D, holster so when we return to 3D we start hip
 	if phone3d:
 		phone3d.call_deferred("holster")
+
+func _update_buzz() -> void:
+	if phone_can_buzz and not phone_is_close:
+		if not phone_buzz.playing:
+			phone_buzz.play()
+	else:
+		if phone_buzz.playing:
+			phone_buzz.stop()
 
 func _ready() -> void:
 	# connect phone events
@@ -99,7 +113,9 @@ func _on_phone_closed() -> void:
 
 func _on_phone_state_changed(state: String) -> void:
 	var ui_up := (state == "close" or state == "full")
-
+	# called from your phone.gd signal
+	phone_is_close = (state == "close" or state == "full")
+	_update_buzz()
 	# overlay visibility
 	if phone_layer:
 		phone_layer.visible = ui_up   # your CanvasLayer with PhoneView under it

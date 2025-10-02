@@ -12,9 +12,10 @@ signal phone_link_clicked(path: String)   # relay to Game after “full” tween
 @export var full_marker: NodePath   # optional; if empty, we’ll reuse close
 @onready var phone3d: Node3D = $Phone3D
 @onready var head: Node3D = $".."
-@onready var phone_view_container: CanvasItem = get_node_or_null("/root/Game/PhoneLayer/PhoneView")
 @onready var phone_vp: SubViewport = $SubViewport
-@onready var phone_ui: Control = $SubViewport/PhoneUI
+@onready var phone_view_container: SubViewportContainer = %PhoneView
+@onready var world_vp: SubViewport = phone3d.get_node("SubViewport") as SubViewport
+@onready var phone_ui: Control = %PhoneUI
 
 var _hip_xf: Transform3D
 var _held_xf: Transform3D
@@ -24,35 +25,36 @@ var _state := "hip"        # "hip" | "held" | "close" | "full"
 var _tween: Tween = null
 
 func _ready() -> void:
-	# If editor wiring is missing, try to resolve by name safely.
+	# Fallbacks if Unique names were missed
 	if phone_view_container == null:
-		phone_view_container = get_tree().get_root().find_child("PhoneView", true, false) as SubViewportContainer
+		phone_view_container = get_node_or_null("/root/Game/PhoneLayer/PhoneView") as SubViewportContainer
 	if ui_overlay_vp == null:
-		ui_overlay_vp = get_tree().get_root().find_child("OverlayViewport", true, false) as SubViewport
+		ui_overlay_vp = get_node_or_null("/root/Game/PhoneLayer/OverlayViewport") as SubViewport
+	if phone_ui == null:
+		phone_ui = get_node_or_null("/root/Game/Player/Head/Phone3D/SubViewport/PhoneUI") as Control
+	if world_vp == null:
+		world_vp = get_node_or_null("/root/Game/Player/Head/Phone3D/SubViewport") as SubViewport
 
-	# Bind container->viewport only if both exist (avoids the "null instance" error)
-	if phone_view_container != null and ui_overlay_vp != null and phone_view_container.subviewport == null:
-		phone_view_container.subviewport = ui_overlay_vp
+	# Bail out cleanly if something is still missing
+	if phone_view_container == null or ui_overlay_vp == null or world_vp == null:
+		push_error("Phone overlay wiring failed: container or viewport missing.")
+		return
 
-	# Make sure the overlay viewport actually renders and receives UI
-	if ui_overlay_vp != null:
-		ui_overlay_vp.render_target_update_mode = SubViewport.UPDATE_ALWAYS
-		ui_overlay_vp.gui_disable_input = false
-	if phone_view_container != null:
-		phone_view_container.mouse_target = true
+	# SubViewportContainer should display the Overlay SubViewport
+	phone_view_container.subviewport = ui_overlay_vp
+	# Let the SubViewport receive UI input
+	phone_view_container.mouse_target = false
 
-	# Connect clickable links in the phone UI if present
-	var label := phone_ui.get_node_or_null("RichTextLabel") as RichTextLabel
-	if label != null and not label.is_connected("meta_clicked", Callable(self, "_on_phone_meta_clicked")):
-		label.connect("meta_clicked", Callable(self, "_on_phone_meta_clicked"))
-	# Cache local transforms from markers (markers live under Head, same space as Phone3D)
-	_hip_xf   = _xf_from_marker(hip_marker,  Vector3(0.15, -0.35,  0.15))
-	_held_xf  = _xf_from_marker(held_marker, Vector3(0.30, -0.12, -0.45))
-	_close_xf = _xf_from_marker(close_marker,Vector3(0.15, -0.05, -0.30))
-	var full_default := Vector3(0.00, -0.02, -0.20)
-	_full_xf  = _xf_from_marker(full_marker, full_default)
+	# Make sure overlay VP renders and accepts UI
+	ui_overlay_vp.gui_disable_input = false
+	ui_overlay_vp.render_target_update_mode = SubViewport.UPDATE_ALWAYS
+
+	# OPTIONAL: connect meta clicks once
+	var label := %RichTextLabel
+	if label == null:
+		label = phone_ui.get_node_or_null("RichTextLabel") as RichTextLabel
 	if label and not label.is_connected("meta_clicked", Callable(self, "_on_phone_meta_clicked")):
-		label.connect("meta_clicked", Callable(self, "_on_phone_meta_clicked"))
+		label.meta_clicked.connect(_on_phone_meta_clicked)
 	# Start holstered at hip
 	_apply_transform_immediate(_hip_xf)
 	_set_overlay(false)
@@ -157,17 +159,16 @@ func _go_state(s: String) -> void:
 	_emit_state()
 
 func _move_ui_to_overlay() -> void:
-	if phone_ui != null and phone_ui.get_parent() != ui_overlay_vp:
-		phone_ui.reparent(ui_overlay_vp)   # Godot 4 keeps signals
-	ui_overlay_vp.gui_disable_input = false
-	phone_view.visible = true
+	if phone_ui and ui_overlay_vp and phone_ui.get_parent() != ui_overlay_vp:
+		phone_ui.reparent(ui_overlay_vp)
+	phone_view_container.visible = true
 	Input.set_mouse_mode(Input.MOUSE_MODE_VISIBLE)
 
 func _move_ui_to_world() -> void:
-	if phone_ui != null and phone_ui.get_parent() != phone_vp:
-		phone_ui.reparent(phone_vp)
-	phone_view.visible = false
-	# mouse mode will be managed by your open/close logic
+	if phone_ui and world_vp and phone_ui.get_parent() != world_vp:
+		phone_ui.reparent(world_vp)
+	phone_view_container.visible = false
+	Input.set_mouse_mode(Input.MOUSE_MODE_CAPTURED)
 
 func _emit_state() -> void:
 	phone_state_changed.emit(_state)
