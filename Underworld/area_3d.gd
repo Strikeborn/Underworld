@@ -45,3 +45,7 @@ func _on_body_exited(body: Node3D) -> void:
 	if body.is_in_group("player"):
 		_player_inside = false
 	pass # Replace with function body.
+
+
+func _on_body_entered(body: Node3D) -> void:
+	pass # Replace with function body.

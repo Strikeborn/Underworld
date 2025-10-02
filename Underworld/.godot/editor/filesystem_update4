@@ -12,3 +12,4 @@ res://levels/2D.tscn
 res://levels/level_2d_config.gd
 res://game.gd
 res://levels/level_config.gd
+res://area_3d.gd

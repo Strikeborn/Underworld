@@ -6,6 +6,12 @@
 [ext_resource type="PackedScene" uid="uid://b62yywsl6xs5v" path="res://low_poly_base_mesh-530_tri.glb" id="4_1hrej"]
 [ext_resource type="Script" uid="uid://du3secivd7sar" path="res://area_3d.gd" id="5_wnytt"]
 
+[sub_resource type="Environment" id="Environment_gjjlr"]
+
+[sub_resource type="CameraAttributesPractical" id="CameraAttributesPractical_gljt1"]
+
+[sub_resource type="Compositor" id="Compositor_f5x84"]
+
 [sub_resource type="BoxMesh" id="BoxMesh_gjjlr"]
 lightmap_size_hint = Vector2i(14, 21)
 flip_faces = true
@@ -13,12 +19,6 @@ size = Vector3(30, 15, 30)
 
 [sub_resource type="ConcavePolygonShape3D" id="ConcavePolygonShape3D_432n0"]
 data = PackedVector3Array(15, 7.5, 15, -15, 7.5, 15, -15, -7.5, 15, 15, -7.5, 15, 15, 7.5, 15, -15, -7.5, 15, -15, 7.5, -15, 15, 7.5, -15, 15, -7.5, -15, -15, -7.5, -15, -15, 7.5, -15, 15, -7.5, -15, 15, 7.5, -15, 15, 7.5, 15, 15, -7.5, 15, 15, -7.5, -15, 15, 7.5, -15, 15, -7.5, 15, -15, 7.5, 15, -15, 7.5, -15, -15, -7.5, -15, -15, -7.5, 15, -15, 7.5, 15, -15, -7.5, -15, -15, 7.5, 15, 15, 7.5, 15, 15, 7.5, -15, -15, 7.5, -15, -15, 7.5, 15, 15, 7.5, -15, 15, -7.5, 15, -15, -7.5, 15, -15, -7.5, -15, 15, -7.5, -15, 15, -7.5, 15, -15, -7.5, -15)
-
-[sub_resource type="Environment" id="Environment_gjjlr"]
-
-[sub_resource type="CameraAttributesPractical" id="CameraAttributesPractical_gljt1"]
-
-[sub_resource type="Compositor" id="Compositor_f5x84"]
 
 [sub_resource type="BoxShape3D" id="BoxShape3D_gjjlr"]
 
@@ -34,6 +34,17 @@ albedo_color = Color(0, 0.48235294, 1, 1)
 
 [node name="Level2" type="Node3D"]
 
+[node name="Level2Config" type="Node" parent="."]
+script = ExtResource("1_gljt1")
+
+[node name="WorldEnvironment" type="WorldEnvironment" parent="."]
+environment = SubResource("Environment_gjjlr")
+camera_attributes = SubResource("CameraAttributesPractical_gljt1")
+compositor = SubResource("Compositor_f5x84")
+
+[node name="Spawn" type="Marker3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 3, 0, 6)
+
 [node name="Room" type="MeshInstance3D" parent="."]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 7.4289513, 0)
 mesh = SubResource("BoxMesh_gjjlr")
@@ -44,19 +55,12 @@ skeleton = NodePath("")
 [node name="CollisionShape3D" type="CollisionShape3D" parent="Room/StaticBody3D"]
 shape = SubResource("ConcavePolygonShape3D_432n0")
 
-[node name="Spawn" type="Marker3D" parent="."]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 3, 0, 6)
-
-[node name="WorldEnvironment" type="WorldEnvironment" parent="."]
-environment = SubResource("Environment_gjjlr")
-camera_attributes = SubResource("CameraAttributesPractical_gljt1")
-compositor = SubResource("Compositor_f5x84")
-
 [node name="DirectionalLight3D" type="DirectionalLight3D" parent="."]
 transform = Transform3D(1, 0, 0, 0, 0.25881907, 0.9659258, 0, -0.9659258, 0.25881907, 0, 12.101866, 4.5443096)
 
 [node name="RigidBody3D" type="RigidBody3D" parent="."]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.521153, 0)
+visible = false
 mass = 0.865
 
 [node name="CollisionShape3D" type="CollisionShape3D" parent="RigidBody3D"]
@@ -68,6 +72,7 @@ skeleton = NodePath("../../../../..")
 
 [node name="RigidBody3D2" type="RigidBody3D" parent="."]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.521153, -7.3636847)
+visible = false
 mass = 0.865
 
 [node name="CollisionShape3D" type="CollisionShape3D" parent="RigidBody3D2"]
@@ -76,9 +81,6 @@ shape = SubResource("BoxShape3D_gjjlr")
 [node name="MeshInstance3D2" type="MeshInstance3D" parent="RigidBody3D2/CollisionShape3D"]
 mesh = SubResource("BoxMesh_gljt1")
 skeleton = NodePath("../../../../..")
-
-[node name="Level2Config" type="Node" parent="."]
-script = ExtResource("1_gljt1")
 
 [node name="Lights" type="Node3D" parent="."]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 7.1055255, 0)
@@ -103,38 +105,156 @@ light_energy = 3.0
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 3.3214061, 4.382251, 0)
 light_energy = 3.0
 
-[node name="Shadow Creature" parent="." instance=ExtResource("2_432n0")]
+[node name="Shadow Creatures" type="Node3D" parent="."]
+
+[node name="Shadow Creature" parent="Shadow Creatures" instance=ExtResource("2_432n0")]
 transform = Transform3D(0.24, 0, 0, 0, 0.24, 0, 0, 0, 0.24, -13.712237, 0, -11.698834)
 
-[node name="Old fat man" parent="." instance=ExtResource("3_1hrej")]
+[node name="Old fat men" type="Node3D" parent="."]
+
+[node name="Old fat man" parent="Old fat men" instance=ExtResource("3_1hrej")]
 transform = Transform3D(0.365, 0, 0, 0, 0.365, 0, 0, 0, 0.365, 5.9260044, 0, -11.979896)
 
-[node name="Person" parent="." instance=ExtResource("4_1hrej")]
+[node name="People" type="Node3D" parent="."]
+
+[node name="Person" parent="People" instance=ExtResource("4_1hrej")]
 transform = Transform3D(0.015, 0, 0, 0, 0.015, 0, 0, 0, 0.015, -4.8789163, 0, 0)
 
-[node name="de8d3af3f2ef40fcae709f7a4aa579d3_fbx" parent="Person/Sketchfab_model" index="0"]
+[node name="de8d3af3f2ef40fcae709f7a4aa579d3_fbx" parent="People/Person/Sketchfab_model" index="0"]
 transform = Transform3D(1, 0, 0, 0, -4.371139e-08, -1, 0, 1, -4.371139e-08, 0, 0, 0)
 
-[node name="Area3D_2" type="Area3D" parent="."]
+[node name="Person2" parent="People" instance=ExtResource("4_1hrej")]
+transform = Transform3D(0.015, 0, 0, 0, 0.015, 0, 0, 0, 0.015, 9.079241, 0, -9.41669)
+
+[node name="de8d3af3f2ef40fcae709f7a4aa579d3_fbx" parent="People/Person2/Sketchfab_model" index="0"]
+transform = Transform3D(1, 0, 0, 0, -4.371139e-08, -1, 0, 1, -4.371139e-08, 0, 0, 0)
+
+[node name="Person3" parent="People" instance=ExtResource("4_1hrej")]
+transform = Transform3D(0.015, 0, 0, 0, 0.015, 0, 0, 0, 0.015, 6.9312725, 0, -6.1726465)
+
+[node name="de8d3af3f2ef40fcae709f7a4aa579d3_fbx" parent="People/Person3/Sketchfab_model" index="0"]
+transform = Transform3D(1, 0, 0, 0, -4.371139e-08, -1, 0, 1, -4.371139e-08, 0, 0, 0)
+
+[node name="Person4" parent="People" instance=ExtResource("4_1hrej")]
+transform = Transform3D(0.015, 0, 0, 0, 0.015, 0, 0, 0, 0.015, -4.421673, 0, -7.245099)
+
+[node name="de8d3af3f2ef40fcae709f7a4aa579d3_fbx" parent="People/Person4/Sketchfab_model" index="0"]
+transform = Transform3D(1, 0, 0, 0, -4.371139e-08, -1, 0, 1, -4.371139e-08, 0, 0, 0)
+
+[node name="Person5" parent="People" instance=ExtResource("4_1hrej")]
+transform = Transform3D(0.015, 0, 0, 0, 0.015, 0, 0, 0, 0.015, -9.856589, 0, -5.2510405)
+
+[node name="de8d3af3f2ef40fcae709f7a4aa579d3_fbx" parent="People/Person5/Sketchfab_model" index="0"]
+transform = Transform3D(1, 0, 0, 0, -4.371139e-08, -1, 0, 1, -4.371139e-08, 0, 0, 0)
+
+[node name="Person6" parent="People" instance=ExtResource("4_1hrej")]
+transform = Transform3D(0.015, 0, 0, 0, 0.015, 0, 0, 0, 0.015, -6.537199, 0, 6.3231544)
+
+[node name="de8d3af3f2ef40fcae709f7a4aa579d3_fbx" parent="People/Person6/Sketchfab_model" index="0"]
+transform = Transform3D(1, 0, 0, 0, -4.371139e-08, -1, 0, 1, -4.371139e-08, 0, 0, 0)
+
+[node name="Person7" parent="People" instance=ExtResource("4_1hrej")]
+transform = Transform3D(0.015, 0, 0, 0, 0.015, 0, 0, 0, 0.015, -0.66623783, 0, 8.442038)
+
+[node name="de8d3af3f2ef40fcae709f7a4aa579d3_fbx" parent="People/Person7/Sketchfab_model" index="0"]
+transform = Transform3D(1, 0, 0, 0, -4.371139e-08, -1, 0, 1, -4.371139e-08, 0, 0, 0)
+
+[node name="Person8" parent="People" instance=ExtResource("4_1hrej")]
+transform = Transform3D(0.015, 0, 0, 0, 0.015, 0, 0, 0, 0.015, 9.184557, 0, 5.5566263)
+
+[node name="de8d3af3f2ef40fcae709f7a4aa579d3_fbx" parent="People/Person8/Sketchfab_model" index="0"]
+transform = Transform3D(1, 0, 0, 0, -4.371139e-08, -1, 0, 1, -4.371139e-08, 0, 0, 0)
+
+[node name="Person9" parent="People" instance=ExtResource("4_1hrej")]
+transform = Transform3D(0.015, 0, 0, 0, 0.015, 0, 0, 0, 0.015, 11.525, 0, 8.145326)
+
+[node name="de8d3af3f2ef40fcae709f7a4aa579d3_fbx" parent="People/Person9/Sketchfab_model" index="0"]
+transform = Transform3D(1, 0, 0, 0, -4.371139e-08, -1, 0, 1, -4.371139e-08, 0, 0, 0)
+
+[node name="Person10" parent="People" instance=ExtResource("4_1hrej")]
+transform = Transform3D(0.015, 0, 0, 0, 0.015, 0, 0, 0, 0.015, 6.095644, 0, 10.791502)
+
+[node name="de8d3af3f2ef40fcae709f7a4aa579d3_fbx" parent="People/Person10/Sketchfab_model" index="0"]
+transform = Transform3D(1, 0, 0, 0, -4.371139e-08, -1, 0, 1, -4.371139e-08, 0, 0, 0)
+
+[node name="Person11" parent="People" instance=ExtResource("4_1hrej")]
+transform = Transform3D(0.015, 0, 0, 0, 0.015, 0, 0, 0, 0.015, 1.9574013, 0, 12.088712)
+
+[node name="de8d3af3f2ef40fcae709f7a4aa579d3_fbx" parent="People/Person11/Sketchfab_model" index="0"]
+transform = Transform3D(1, 0, 0, 0, -4.371139e-08, -1, 0, 1, -4.371139e-08, 0, 0, 0)
+
+[node name="Person12" parent="People" instance=ExtResource("4_1hrej")]
+transform = Transform3D(0.015, 0, 0, 0, 0.015, 0, 0, 0, 0.015, -8.69534, 0, 11.442752)
+
+[node name="de8d3af3f2ef40fcae709f7a4aa579d3_fbx" parent="People/Person12/Sketchfab_model" index="0"]
+transform = Transform3D(1, 0, 0, 0, -4.371139e-08, -1, 0, 1, -4.371139e-08, 0, 0, 0)
+
+[node name="Person13" parent="People" instance=ExtResource("4_1hrej")]
+transform = Transform3D(0.015, 0, 0, 0, 0.015, 0, 0, 0, 0.015, 10.915248, 0, -5.7348013)
+
+[node name="de8d3af3f2ef40fcae709f7a4aa579d3_fbx" parent="People/Person13/Sketchfab_model" index="0"]
+transform = Transform3D(1, 0, 0, 0, -4.371139e-08, -1, 0, 1, -4.371139e-08, 0, 0, 0)
+
+[node name="Person14" parent="People" instance=ExtResource("4_1hrej")]
+transform = Transform3D(0.015, 0, 0, 0, 0.015, 0, 0, 0, 0.015, 0.32202244, 0, -11.514703)
+
+[node name="de8d3af3f2ef40fcae709f7a4aa579d3_fbx" parent="People/Person14/Sketchfab_model" index="0"]
+transform = Transform3D(1, 0, 0, 0, -4.371139e-08, -1, 0, 1, -4.371139e-08, 0, 0, 0)
+
+[node name="Person15" parent="People" instance=ExtResource("4_1hrej")]
+transform = Transform3D(0.015, 0, 0, 0, 0.015, 0, 0, 0, 0.015, 9.889429, 0, 10.271926)
+
+[node name="de8d3af3f2ef40fcae709f7a4aa579d3_fbx" parent="People/Person15/Sketchfab_model" index="0"]
+transform = Transform3D(1, 0, 0, 0, -4.371139e-08, -1, 0, 1, -4.371139e-08, 0, 0, 0)
+
+[node name="Person16" parent="People" instance=ExtResource("4_1hrej")]
+transform = Transform3D(0.015, 0, 0, 0, 0.015, 0, 0, 0, 0.015, 4.242799, 0, 3.4818459)
+
+[node name="de8d3af3f2ef40fcae709f7a4aa579d3_fbx" parent="People/Person16/Sketchfab_model" index="0"]
+transform = Transform3D(1, 0, 0, 0, -4.371139e-08, -1, 0, 1, -4.371139e-08, 0, 0, 0)
+
+[node name="Person17" parent="People" instance=ExtResource("4_1hrej")]
+transform = Transform3D(0.015, 0, 0, 0, 0.015, 0, 0, 0, 0.015, 3.8611245, 0, -2.921854)
+
+[node name="de8d3af3f2ef40fcae709f7a4aa579d3_fbx" parent="People/Person17/Sketchfab_model" index="0"]
+transform = Transform3D(1, 0, 0, 0, -4.371139e-08, -1, 0, 1, -4.371139e-08, 0, 0, 0)
+
+[node name="Next_level" type="Area3D" parent="."]
 transform = Transform3D(-4.371139e-08, 0, -1, 0, 1, 0, 1, 0, -4.371139e-08, 13.022298, 0.952557, 0)
 script = ExtResource("5_wnytt")
 next_level_path = "res://levels/Level3.tscn"
 
-[node name="CollisionShape3D_2" type="CollisionShape3D" parent="Area3D_2"]
+[node name="CollisionShape3D_2" type="CollisionShape3D" parent="Next_level"]
 shape = SubResource("BoxShape3D_jiouf")
 
-[node name="Label3D" type="Label3D" parent="Area3D_2/CollisionShape3D_2"]
+[node name="Label3D" type="Label3D" parent="Next_level/CollisionShape3D_2"]
 modulate = Color(0, 0.70980394, 0.90588236, 1)
 text = "https://Antifacts.ca/nazi_counter_strategies_101.choice"
 
-[node name="AreaMesh_2" type="MeshInstance3D" parent="Area3D_2/CollisionShape3D_2"]
+[node name="AreaMesh_2" type="MeshInstance3D" parent="Next_level/CollisionShape3D_2"]
 visible = false
 mesh = SubResource("BoxMesh_pixff")
 skeleton = NodePath("../../../RigidBody3D")
 surface_material_override/0 = SubResource("StandardMaterial3D_6m74g")
 
-[connection signal="body_entered" from="Area3D_2" to="Area3D_2" method="_on_area_3d_body_entered"]
-[connection signal="body_exited" from="Area3D_2" to="Area3D_2" method="_on_body_exited"]
+[connection signal="body_entered" from="Next_level" to="Next_level" method="_on_area_3d_body_entered"]
+[connection signal="body_exited" from="Next_level" to="Next_level" method="_on_body_exited"]
 
-[editable path="Old fat man"]
-[editable path="Person"]
+[editable path="Old fat men/Old fat man"]
+[editable path="People/Person"]
+[editable path="People/Person2"]
+[editable path="People/Person3"]
+[editable path="People/Person4"]
+[editable path="People/Person5"]
+[editable path="People/Person6"]
+[editable path="People/Person7"]
+[editable path="People/Person8"]
+[editable path="People/Person9"]
+[editable path="People/Person10"]
+[editable path="People/Person11"]
+[editable path="People/Person12"]
+[editable path="People/Person13"]
+[editable path="People/Person14"]
+[editable path="People/Person15"]
+[editable path="People/Person16"]
+[editable path="People/Person17"]

@@ -1,7 +1,8 @@
-[gd_scene load_steps=37 format=3 uid="uid://kno4sbn0g064"]
+[gd_scene load_steps=40 format=3 uid="uid://kno4sbn0g064"]
 
 [ext_resource type="PackedScene" uid="uid://b17ra0brudiql" path="res://c_7_rifle.tscn" id="1_3ns6d"]
 [ext_resource type="PackedScene" uid="uid://cbtkqnf7oeb5a" path="res://inkwell_with_feather_pen.glb" id="1_liotd"]
+[ext_resource type="Script" uid="uid://du3secivd7sar" path="res://area_3d.gd" id="2_10eaw"]
 [ext_resource type="PackedScene" uid="uid://c3p3q1nmrayen" path="res://microphone.glb" id="2_mmhpo"]
 [ext_resource type="PackedScene" uid="uid://dlioqck0fe6pn" path="res://molotov_cocktail_with_lighter.glb" id="3_rd3y7"]
 [ext_resource type="PackedScene" uid="uid://bai1e5yyl8k75" path="res://simple_pencil.glb" id="4_liotd"]
@@ -102,10 +103,16 @@ points = PackedVector3Array(-3.5, -0.1, -0.905, -3.5, 0.1, -0.905, 3.5, -0.1, -0
 [sub_resource type="BoxShape3D" id="BoxShape3D_lwl86"]
 size = Vector3(0.255, 0.58, 1.075)
 
+[sub_resource type="BoxMesh" id="BoxMesh_10eaw"]
+size = Vector3(1.41, 1, 0.3)
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_ldhjt"]
+albedo_color = Color(0, 0.48235294, 1, 1)
+
 [node name="Level3" type="Node3D"]
 
 [node name="Room" type="MeshInstance3D" parent="."]
-transform = Transform3D(0.9999999, -0.00048766937, -0.00012806157, 0.00048767467, 0.9999999, 4.4266002e-05, 0.00012804146, -4.4324122e-05, 1, 0, 2.5, 0)
+transform = Transform3D(0.9999999, -0.00048766937, -0.00012806157, 0.00048767467, 0.9999999, 4.4266002e-05, 0.00012804146, -4.4324122e-05, 1, -0.0028619766, 2.5101888, 0.012337685)
 mesh = SubResource("BoxMesh_kn5dl")
 skeleton = NodePath("")
 
@@ -300,15 +307,35 @@ shape = SubResource("ConvexPolygonShape3D_s7kpb")
 
 [node name="Back_of_boat" type="Area3D" parent="Boat"]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -3.0917425, 0, 0)
+priority = 1
+script = ExtResource("2_10eaw")
+next_level_path = "res://End_Screen.tscn"
 
 [node name="CollisionShape3D" type="CollisionShape3D" parent="Boat/Back_of_boat"]
 shape = SubResource("BoxShape3D_lwl86")
 
+[node name="AreaMesh_2" type="MeshInstance3D" parent="Boat/Back_of_boat/CollisionShape3D"]
+transform = Transform3D(1.9106855e-15, -1, 4.371139e-08, -4.371139e-08, -4.371139e-08, -1, 1, 0, -4.371139e-08, 0, 0, 0.18686247)
+visible = false
+mesh = SubResource("BoxMesh_10eaw")
+skeleton = NodePath("../../../RigidBody3D")
+surface_material_override/0 = SubResource("StandardMaterial3D_ldhjt")
+
 [node name="Front_of_boat" type="Area3D" parent="Boat"]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 4.3741794, 1.6991109, 0)
+priority = 1
+script = ExtResource("2_10eaw")
+next_level_path = "res://End_Screen.tscn"
 
 [node name="CollisionShape3D" type="CollisionShape3D" parent="Boat/Front_of_boat"]
 shape = SubResource("BoxShape3D_lwl86")
+
+[node name="AreaMesh_2" type="MeshInstance3D" parent="Boat/Front_of_boat/CollisionShape3D"]
+transform = Transform3D(4.371139e-08, 8.742278e-08, 1, 3.821371e-15, -1, 8.742278e-08, 1, 0, -4.371139e-08, 0, 0, 0.18686247)
+visible = false
+mesh = SubResource("BoxMesh_10eaw")
+skeleton = NodePath("../../../RigidBody3D")
+surface_material_override/0 = SubResource("StandardMaterial3D_ldhjt")
 
 [node name="C7 Rifle" parent="." instance=ExtResource("1_3ns6d")]
 transform = Transform3D(0.5, 0, 0, 0, 0.5, 0, 0, 0, 0.5, -0.20145625, 1.7543716, 2.8270633)
@@ -327,3 +354,8 @@ script = ExtResource("5_mmhpo")
 
 [node name="Spraycan" parent="." instance=ExtResource("7_10eaw")]
 transform = Transform3D(-1.547063, 0, 0.9681018, 0, 1.825, 0, -0.9681018, 0, -1.547063, -3.9427662, 1.0646777, 2.815253)
+
+[connection signal="body_entered" from="Boat/Back_of_boat" to="Boat/Back_of_boat" method="_on_area_3d_body_entered"]
+[connection signal="body_exited" from="Boat/Back_of_boat" to="Boat/Back_of_boat" method="_on_body_exited"]
+[connection signal="body_entered" from="Boat/Front_of_boat" to="Boat/Back_of_boat" method="_on_area_3d_body_entered"]
+[connection signal="body_exited" from="Boat/Front_of_boat" to="Boat/Back_of_boat" method="_on_body_exited"]

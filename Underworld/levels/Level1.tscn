@@ -36,7 +36,6 @@ points = PackedVector3Array(0.0616763, 3.2645476, 0.09205608, -0.09018691, -3.26
 [sub_resource type="BoxShape3D" id="BoxShape3D_vcl05"]
 
 [sub_resource type="BoxMesh" id="BoxMesh_cr8f5"]
-size = Vector3(17.255, 1, 10.47)
 
 [sub_resource type="StandardMaterial3D" id="StandardMaterial3D_nn0v1"]
 albedo_color = Color(0, 0.48235294, 1, 1)
@@ -113,10 +112,10 @@ transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -3.729078, -2.086965, 1.44521
 script = ExtResource("1_b84ys")
 
 [node name="CollisionShape3D_3" type="CollisionShape3D" parent="Ground"]
+transform = Transform3D(20.036402, 0, 0, 0, 1, 0, 0, 0, 8.424625, 6.8357906, 0, 0.49161577)
 shape = SubResource("BoxShape3D_vcl05")
 
 [node name="AreaMesh_1" type="MeshInstance3D" parent="Ground/CollisionShape3D_3"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 4.9078674, 0, 0)
 mesh = SubResource("BoxMesh_cr8f5")
 skeleton = NodePath("")
 surface_material_override/0 = SubResource("StandardMaterial3D_nn0v1")

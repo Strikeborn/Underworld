@@ -1,11 +1,12 @@
+MeshInstance3D
+AudioStreamPlayer
+Node3D
 Label3D      - Matches the "text" keyword.
 AudioStreamPlayer3D
-Node3D
 AnimatedSprite2D
 RichTextLabel
 CollisionShape3D
 Area3D
-MeshInstance3D
 SpotLight3D
 OmniLight3D
 StaticBody3D
