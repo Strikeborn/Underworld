@@ -1,4 +1,4 @@
-[gd_scene load_steps=40 format=3 uid="uid://kno4sbn0g064"]
+[gd_scene load_steps=41 format=3 uid="uid://kno4sbn0g064"]
 
 [ext_resource type="PackedScene" uid="uid://b17ra0brudiql" path="res://c_7_rifle.tscn" id="1_3ns6d"]
 [ext_resource type="PackedScene" uid="uid://cbtkqnf7oeb5a" path="res://inkwell_with_feather_pen.glb" id="1_liotd"]
@@ -8,6 +8,7 @@
 [ext_resource type="PackedScene" uid="uid://bai1e5yyl8k75" path="res://simple_pencil.glb" id="4_liotd"]
 [ext_resource type="Script" uid="uid://g5id4r4giaxk" path="res://levels/level_3_config.gd" id="5_mmhpo"]
 [ext_resource type="PackedScene" uid="uid://bb5rwiv4h55xi" path="res://spraypaint_can_mtn_hardcore.glb" id="7_10eaw"]
+[ext_resource type="Texture2D" uid="uid://cia7n7gbj3gve" path="res://Straw_Hat_Pirates'_Jolly_Roger_(based_on_the_original_from_the_series).svg.png" id="9_ldhjt"]
 
 [sub_resource type="BoxMesh" id="BoxMesh_kn5dl"]
 lightmap_size_hint = Vector2i(14, 21)
@@ -354,6 +355,10 @@ script = ExtResource("5_mmhpo")
 
 [node name="Spraycan" parent="." instance=ExtResource("7_10eaw")]
 transform = Transform3D(-1.547063, 0, 0.9681018, 0, 1.825, 0, -0.9681018, 0, -1.547063, -3.9427662, 1.0646777, 2.815253)
+
+[node name="Sprite3D" type="Sprite3D" parent="."]
+transform = Transform3D(0.45215535, 0, 0, 0, 0.36221462, 0, 0, 0, 1, -2.6615715, 3.1417277, -3.0154543)
+texture = ExtResource("9_ldhjt")
 
 [connection signal="body_entered" from="Boat/Back_of_boat" to="Boat/Back_of_boat" method="_on_area_3d_body_entered"]
 [connection signal="body_exited" from="Boat/Back_of_boat" to="Boat/Back_of_boat" method="_on_body_exited"]

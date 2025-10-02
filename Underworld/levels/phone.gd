@@ -1,234 +1,191 @@
 extends Node3D
+# Phone3D script (attached to Player/Head/Phone3D)
 
-# ─────────────────────────────────────────────────────────────────────────────
-# Connections / external signals
-# ─────────────────────────────────────────────────────────────────────────────
-signal phone_link_clicked(path: String)
-signal phone_state_changed(state: String)	# "hip" | "held" | "close" | "full"
-
-# ─────────────────────────────────────────────────────────────────────────────
-# Wiring (set these once in the Inspector)
-# ─────────────────────────────────────────────────────────────────────────────
-@export var world_vp_path: NodePath						# Player/Head/Phone3D/SubViewport
-@export var phone_view_container_path: NodePath		# Game/PhoneLayer/PhoneView (SubViewportContainer)
-@export var ui_overlay_vp_path: NodePath				# Game/PhoneLayer/OverlayViewport (SubViewport)
-@export var buzz_player_path: NodePath					# Game/AudioStreamPlayer(3D)
-
-@export var head_path: NodePath							# Player/Head  (used for fallback transforms)
-
-@export var hip_marker: NodePath
+# --- Pose markers under Head/Phone3D (set in Inspector) ---
+@export var hip_marker:  NodePath
 @export var held_marker: NodePath
 @export var close_marker: NodePath
 @export var full_marker: NodePath
 
-# Fallback local offsets (relative to Head) used if a marker path is empty
-@export var hip_offset := Vector3(0.15, -0.35, 0.15)
-@export var held_offset := Vector3(0.30, -0.12, -0.45)
-@export var close_offset := Vector3(0.15, -0.05, -0.30)
-@export var full_offset := Vector3(0.00, -0.02, -0.20)
+# --- References that live in the Player scene ---
+@onready var head: Node3D = get_parent()         # Head
+@onready var phone3d: Node3D = self               # Phone3D
 
-# Overlay UI update & tween
-@export var move_time := 0.20
+# --- Overlay UI that lives under /root/Game/PhoneLayer ---
+# SubViewportContainer that draws the phone overlay
+@onready var phone_view_container: SubViewportContainer = \
+	get_node_or_null("/root/Game/PhoneLayer/PhoneView")
 
-# Buzzing options (enable on levels you want buzzing)
-@export var buzz_on_this_level := true
-@export var buzz_period_sec := 2.0			# initial period between buzzes
-@export var buzz_min_period := 0.6			# clamp as period shrinks
-@export var buzz_shrink_factor := 0.85		# each buzz shortens period *= factor
+# The SubViewport that actually contains the UI scene
+@onready var ui_overlay_vp: SubViewport = \
+	get_node_or_null("/root/Game/PhoneLayer/OverlayViewport")
 
-# ─────────────────────────────────────────────────────────────────────────────
-# Internals
-# ─────────────────────────────────────────────────────────────────────────────
-@onready var phone3d: Node3D = self
-@onready var head: Node3D = get_node_or_null(head_path)
-@onready var world_vp: SubViewport = get_node_or_null(world_vp_path)
-@onready var phone_view_container: SubViewportContainer = get_node_or_null(phone_view_container_path)
-@onready var ui_overlay_vp: SubViewport = get_node_or_null(ui_overlay_vp_path)
-@onready var buzz: AudioStreamPlayer = get_node_or_null(buzz_player_path)
-
-var _hip_xf: Transform3D
+# --- Cached pose transforms (local to Head) ---
+var _hip_xf:  Transform3D
 var _held_xf: Transform3D
 var _close_xf: Transform3D
-var _full_xf: Transform3D
+var _full_xf:  Transform3D
 
-var _state := "hip"				# "hip" | "held" | "close" | "full"
+# --- State / tween ---
+var _state := "hip"      # "hip" | "held" | "close" | "full"
 var _tween: Tween = null
 
-var _buzz_timer := 0.0
-var _buzz_active := false
+# ----------------------------- Helpers -----------------------------
 
-# ─────────────────────────────────────────────────────────────────────────────
-# Lifecycle
-# ─────────────────────────────────────────────────────────────────────────────
+func _xf_from_marker(path: NodePath, fallback_pos := Vector3.ZERO) -> Transform3D:
+	if path == NodePath(""):
+		return Transform3D(Basis(), fallback_pos)
+	var m := get_node_or_null(path) as Node3D
+	return m.transform if m else Transform3D(Basis(), fallback_pos)
+
+func _apply_transform_immediate(t: Transform3D) -> void:
+	if _tween:
+		_tween.kill()
+		_tween = null
+	global_transform = head.global_transform * t
+
+func _tween_to(t: Transform3D, dur := 0.20) -> void:
+	if _tween:
+		_tween.kill()
+	_tween = create_tween().set_trans(Tween.TRANS_CUBIC).set_ease(Tween.EASE_IN_OUT)
+	var from := global_transform
+	var to   := head.global_transform * t
+	_tween.tween_property(self, "global_transform", to, dur)
+
+func _emit_state() -> void:
+	# Relay to Game if needed
+	var game := get_node_or_null("/root/Game")
+	if game and game.has_signal("phone_state_changed"):
+		game.emit_signal("phone_state_changed", _state)
+
+# ------------------------------ Ready ------------------------------
+
 func _ready() -> void:
-	# Show overlay SubViewport inside the container & ensure it receives GUI input
-	if phone_view_container != null and ui_overlay_vp != null:
+	# Wire the overlay viewer once (no reparenting; just point the container)
+	if phone_view_container and ui_overlay_vp:
 		phone_view_container.subviewport = ui_overlay_vp
-		phone_view_container.mouse_target = true
+		# Let the controls inside the SubViewport receive mouse, not the container
+		phone_view_container.mouse_target = false
+
+	if ui_overlay_vp:
 		ui_overlay_vp.gui_disable_input = false
+		ui_overlay_vp.handle_input_locally = true
 		ui_overlay_vp.render_target_update_mode = SubViewport.UPDATE_ALWAYS
 
-	# Cache pose transforms
-	_hip_xf = _xf_from_marker(hip_marker,  hip_offset)
-	_held_xf = _xf_from_marker(held_marker, held_offset)
-	_close_xf = _xf_from_marker(close_marker, close_offset)
-	_full_xf = _xf_from_marker(full_marker, full_offset)
+	# Cache local (to Head) transforms from the markers
+	_hip_xf  = _xf_from_marker(hip_marker,  Vector3(0.15, -0.35,  0.15))
+	_held_xf = _xf_from_marker(held_marker, Vector3(0.30, -0.12, -0.45))
+	_close_xf= _xf_from_marker(close_marker,Vector3(0.15, -0.05, -0.30))
+	_full_xf = _xf_from_marker(full_marker, _close_xf.origin + Vector3(0.0, -0.02, -0.20))
 
 	# Start holstered at hip
 	_apply_transform_immediate(_hip_xf)
 	_set_overlay(false)
 	_emit_state()
 
+# ----------------------------- Overlay -----------------------------
+
+func _set_overlay(on: bool) -> void:
+	# You already mount the UI SubViewport to the container in _ready().
+	# Nothing else is required here unless you want to hide/show the viewer.
+	if phone_view_container:
+		phone_view_container.visible = on
+
+func move_ui_to_overlay() -> void:
+	# Helper kept for compatibility: re-aim the container to the overlay viewport.
+	if phone_view_container and ui_overlay_vp:
+		phone_view_container.subviewport = ui_overlay_vp
+
+func move_ui_to_world() -> void:
+	# We no longer draw UI in the Phone3D’s SubViewport, so this is a no-op.
+	pass
+
+# ----------------------------- Buzzing -----------------------------
+
+func _is_stowed() -> bool:
+	return _state == "hip"
+
+func _buzz_enabled_for_level() -> bool:
+	# Stub: return true unless you later hook LevelConfig here
+	return true
+
 func _process(delta: float) -> void:
-	if not buzz_on_this_level:
+	var game := get_node_or_null("/root/Game")
+
+	var should_buzz := true
+	if game and "phone_should_buzz" in game:
+		should_buzz = game.phone_should_buzz
+
+	if not _buzz_enabled_for_level():
 		return
 
-	# Stop buzzing whenever UI is up (close/full)
-	var is_open := (_state == "close" or _state == "full")
-	if is_open:
-		_stop_buzzing()
-		return
+	var do_buzz := should_buzz and _is_stowed()
 
-	_buzz_timer -= delta
-	if _buzz_timer <= 0.0:
-		_play_buzz()
-		# shrink the period gradually, with clamp
-		var next_period := buzz_period_sec * buzz_shrink_factor
-		if next_period < buzz_min_period:
-			next_period = buzz_min_period
-		_buzz_timer = next_period
+	if game:
+		# Your Game.gd version of _update_buzz() takes no args
+		if do_buzz and game.has_method("_update_buzz"):
+			game._update_buzz()
+		elif game.has_method("_stop_buzzing"):
+			game._stop_buzzing()
 
-# ─────────────────────────────────────────────────────────────────────────────
-# Public API (PlayerLogic drives these with R / T)
-# ─────────────────────────────────────────────────────────────────────────────
+# ------------------------------ Poses ------------------------------
+
 func next_pose() -> void:
-	if _state == "hip":
-		_set_overlay(false)
-		_tween_to(_held_xf)
-		_unlock_mouse()
-	elif _state == "held":
-		_set_overlay(true)
-		_tween_to(_close_xf)
-		_lock_mouse_for_ui()
-	elif _state == "close":
-		_set_overlay(true)
-		_tween_to(_full_xf)
-		_lock_mouse_for_ui()
-	elif _state == "full":
-		# stay here until link/meta click handles navigation
-		pass
+	match _state:
+		"hip":
+			_set_overlay(false)
+			_tween_to(_held_xf)
+			_state = "held"
+
+			var game := get_node_or_null("/root/Game")
+			if game and game.has_method("_stop_buzzing"):
+				game._stop_buzzing()
+
+		"held":
+			_set_overlay(true)
+			move_ui_to_overlay()
+			_tween_to(_close_xf)
+			_state = "close"
+
+		"close":
+			_set_overlay(true)
+			_tween_to(_full_xf)
+			_state = "full"
+
+		"full":
+			pass
+
 	_emit_state()
 
+
 func prev_pose() -> void:
-	if _state == "full":
-		_set_overlay(true)
-		_tween_to(_close_xf)
-		_lock_mouse_for_ui()
-	elif _state == "close":
-		_set_overlay(false)
-		_tween_to(_held_xf)
-		_unlock_mouse()
-	elif _state == "held":
-		_set_overlay(false)
-		_tween_to(_hip_xf)
-		_unlock_mouse()
-	elif _state == "hip":
-		pass
+	match _state:
+		"full":
+			_tween_to(_close_xf)
+			_state = "close"
+		"close":
+			_set_overlay(false)
+			move_ui_to_world()
+			_tween_to(_held_xf)
+			_state = "held"
+		"held":
+			_tween_to(_hip_xf)
+			_state = "hip"
+		"hip":
+			pass
 	_emit_state()
 
 func holster() -> void:
 	_set_overlay(false)
+	move_ui_to_world()
 	_tween_to(_hip_xf)
-	_unlock_mouse()
+	_state = "hip"
 	_emit_state()
 
-# If your UI emits a "link clicked" (e.g. RichTextLabel meta_clicked),
-# you can call this to go full, then relay the link for transition.
-func request_full_then_link(path: String) -> void:
-	if _state != "full":
-		_set_overlay(true)
-		_tween_to(_full_xf)
-		_lock_mouse_for_ui()
-		_emit_state()
-		# Give the tween a moment; if you want to strictly wait, connect to finished.
-		await get_tree().process_frame
-	phone_link_clicked.emit(path)
+# ------------------------------ Input hooks ------------------------------
 
-# ─────────────────────────────────────────────────────────────────────────────
-# Overlay routing (no reparenting; we simply show the overlay container)
-# ─────────────────────────────────────────────────────────────────────────────
-func move_ui_to_overlay() -> void:
-	if phone_view_container != null:
-		phone_view_container.visible = true
+func lock_mouse_for_ui() -> void:
 	Input.set_mouse_mode(Input.MOUSE_MODE_VISIBLE)
 
-func move_ui_to_world() -> void:
-	if phone_view_container != null:
-		phone_view_container.visible = false
+func unlock_mouse() -> void:
 	Input.set_mouse_mode(Input.MOUSE_MODE_CAPTURED)
-
-func _set_overlay(on: bool) -> void:
-	if on:
-		move_ui_to_overlay()
-	else:
-		move_ui_to_world()
-
-# ─────────────────────────────────────────────────────────────────────────────
-# Buzz helpers
-# ─────────────────────────────────────────────────────────────────────────────
-func _play_buzz() -> void:
-	if buzz == null:
-		return
-	_buzz_active = true
-	if not buzz.playing:
-		buzz.play()
-
-func _stop_buzzing() -> void:
-	_buzz_timer = 0.0
-	_buzz_active = false
-	if buzz != null and buzz.playing:
-		buzz.stop()
-
-# ─────────────────────────────────────────────────────────────────────────────
-# Transforms & tweening
-# ─────────────────────────────────────────────────────────────────────────────
-func _xf_from_marker(path: NodePath, fallback_local_offset: Vector3) -> Transform3D:
-	# Prefer explicit marker transform
-	if not path.is_empty():
-		var m := get_node_or_null(path) as Node3D
-		if m != null:
-			return m.global_transform
-
-	# Otherwise compose from Head + local offset (if head is provided)
-	if head != null:
-		var t := head.global_transform
-		t.origin += t.basis * fallback_local_offset
-		return t
-
-	# Last resort: this node
-	return global_transform
-
-func _tween_to(t: Transform3D) -> void:
-	if _tween != null:
-		_tween.kill()
-	_tween = create_tween()
-	_tween.tween_property(phone3d, "global_transform", t, move_time)
-	_tween.finished.connect(func(): _tween = null)
-
-func _apply_transform_immediate(t: Transform3D) -> void:
-	if _tween != null:
-		_tween.kill()
-		_tween = null
-	phone3d.global_transform = t
-
-# ─────────────────────────────────────────────────────────────────────────────
-# Mouse lock (camera vs. UI)
-# ─────────────────────────────────────────────────────────────────────────────
-func _lock_mouse_for_ui() -> void:
-	Input.set_mouse_mode(Input.MOUSE_MODE_VISIBLE)
-
-func _unlock_mouse() -> void:
-	Input.set_mouse_mode(Input.MOUSE_MODE_CAPTURED)
-
-func _emit_state() -> void:
-	phone_state_changed.emit(_state)

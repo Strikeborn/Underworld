@@ -6,3 +6,46 @@
 
 [node name="AnimatedSprite2D" type="AnimatedSprite2D" parent="."]
 sprite_frames = SubResource("SpriteFrames_vdhqp")
+
+[node name="CanvasLayer" type="CanvasLayer" parent="."]
+
+[node name="Panel" type="Panel" parent="."]
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="Node2D" type="Node2D" parent="."]
+z_index = 1
+
+[node name="Label" type="Label" parent="Node2D"]
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_left = 877.0
+offset_top = 474.0
+offset_right = 1120.0
+offset_bottom = 549.0
+grow_horizontal = 2
+grow_vertical = 2
+text = "Loading Level
+...Prepare for battle...
+Take it to the streets!"
+horizontal_alignment = 1
+uppercase = true
+
+[node name="Node2D2" type="Node2D" parent="."]
+
+[node name="ColorRect" type="ColorRect" parent="Node2D2"]
+custom_minimum_size = Vector2(3000, 1500)
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_left = -712.0
+offset_top = -270.0
+offset_right = 2288.0
+offset_bottom = 1230.0
+grow_horizontal = 2
+grow_vertical = 2
+color = Color(0, 0, 0, 1)

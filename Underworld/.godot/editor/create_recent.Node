@@ -1,4 +1,11 @@
+Sprite3D
 MeshInstance3D
+Node2D
+Node
+ColorRect
+Panel
+CanvasLayer
+Label
 AudioStreamPlayer
 Node3D
 Label3D      - Matches the "text" keyword.
@@ -6,7 +13,3 @@ AudioStreamPlayer3D
 AnimatedSprite2D
 RichTextLabel
 CollisionShape3D
-Area3D
-SpotLight3D
-OmniLight3D
-StaticBody3D

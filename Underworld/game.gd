@@ -170,7 +170,6 @@ func load_level(path: String, do_fade := true) -> void:
 	if do_fade:
 		await _fade(1.0)
 	_clear_level()
-
 	var packed: PackedScene = load(path)
 	if packed == null:
 		if do_fade: await _fade(0.0, 0.2)
