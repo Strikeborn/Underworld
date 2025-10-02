@@ -5,18 +5,18 @@ signal phone_link_clicked(path: String)   # relay to Game after “full” tween
 @export var move_time := 0.20
 @onready var ui_world_vp: SubViewport = %SubViewport          # Player/Phone3D/SubViewport
 @onready var ui_overlay_vp: SubViewport = %OverlayViewport     # Game/PhoneLayer/OverlayViewport
-@onready var phone_view: SubViewportContainer = %PhoneView     # Game/PhoneLayer/PhoneView
 @export var hip_marker: NodePath
 @export var held_marker: NodePath
 @export var close_marker: NodePath
 @export var full_marker: NodePath   # optional; if empty, we’ll reuse close
-@onready var phone3d: Node3D = $Phone3D
 @onready var head: Node3D = $".."
-@onready var phone_vp: SubViewport = $SubViewport
 @onready var phone_view_container: SubViewportContainer = %PhoneView
 @onready var world_vp: SubViewport = phone3d.get_node("SubViewport") as SubViewport
-@onready var phone_ui: Control = %PhoneUI
-
+@onready var phone3d        : Node3D               = self
+@onready var phone_vp       : SubViewport          = $"SubViewport"
+@onready var phone_ui       : Control              = $"SubViewport/PhoneUI"
+@onready var phone_view     : SubViewportContainer = get_node("/root/Game/PhoneLayer/PhoneView")
+@onready var buzz := $PhoneBuzz  # AudioStreamPlayer or AudioStreamPlayer3D
 var _hip_xf: Transform3D
 var _held_xf: Transform3D
 var _close_xf: Transform3D
@@ -26,35 +26,19 @@ var _tween: Tween = null
 
 func _ready() -> void:
 	# Fallbacks if Unique names were missed
-	if phone_view_container == null:
-		phone_view_container = get_node_or_null("/root/Game/PhoneLayer/PhoneView") as SubViewportContainer
-	if ui_overlay_vp == null:
-		ui_overlay_vp = get_node_or_null("/root/Game/PhoneLayer/OverlayViewport") as SubViewport
-	if phone_ui == null:
-		phone_ui = get_node_or_null("/root/Game/Player/Head/Phone3D/SubViewport/PhoneUI") as Control
-	if world_vp == null:
-		world_vp = get_node_or_null("/root/Game/Player/Head/Phone3D/SubViewport") as SubViewport
+	# Show this SubViewport inside the overlay container
+	if is_instance_valid(phone_view) and is_instance_valid(phone_vp):
+		phone_view.subviewport = phone_vp
+		phone_vp.gui_disable_input = false  # allow clicks on UI
+	
+	# (your existing pose init here)
+	# make sure the SubViewport updates while phone is up
+	phone_vp.render_target_update_mode = SubViewport.UPDATE_ALWAYS
 
-	# Bail out cleanly if something is still missing
-	if phone_view_container == null or ui_overlay_vp == null or world_vp == null:
-		push_error("Phone overlay wiring failed: container or viewport missing.")
-		return
-
-	# SubViewportContainer should display the Overlay SubViewport
-	phone_view_container.subviewport = ui_overlay_vp
-	# Let the SubViewport receive UI input
-	phone_view_container.mouse_target = false
-
-	# Make sure overlay VP renders and accepts UI
-	ui_overlay_vp.gui_disable_input = false
-	ui_overlay_vp.render_target_update_mode = SubViewport.UPDATE_ALWAYS
-
-	# OPTIONAL: connect meta clicks once
-	var label := %RichTextLabel
-	if label == null:
-		label = phone_ui.get_node_or_null("RichTextLabel") as RichTextLabel
+	# Optional: connect meta_clicked if you haven't already
+	var label := phone_ui.get_node_or_null("RichTextLabel")
 	if label and not label.is_connected("meta_clicked", Callable(self, "_on_phone_meta_clicked")):
-		label.meta_clicked.connect(_on_phone_meta_clicked)
+		label.connect("meta_clicked", Callable(self, "_on_phone_meta_clicked"))
 	# Start holstered at hip
 	_apply_transform_immediate(_hip_xf)
 	_set_overlay(false)
@@ -77,7 +61,22 @@ func _xf_from_marker(path: NodePath, fallback_pos: Vector3) -> Transform3D:
 		if m:
 			return m.transform
 	return Transform3D(Basis(), fallback_pos)
+var _buzz_timer := 0.0
+const BUZZ_PERIOD := 2.0  # seconds between buzzes (start large, shrink later)
+func phone_is_open() -> bool:
+	# however you expose state from phone.gd; e.g.:
+	return phone_state == "close" or phone_state == "full"
 
+func _process(delta: float) -> void:
+	# Only on Level1 and only if phone is not close/full
+	if current_level_name() == "Level1" and not phone_is_open():
+		_buzz_timer -= delta
+		if _buzz_timer <= 0.0:
+			if buzz: buzz.play()
+			# make buzzing faster gradually (clamped)
+			_buzz_timer = max(0.6, BUZZ_PERIOD * 0.85)
+	else:
+		_buzz_timer = 0.0  # reset when open or not level1
 func _apply_transform_immediate(t: Transform3D) -> void:
 	if _tween:
 		_tween.kill()
@@ -162,12 +161,14 @@ func _move_ui_to_overlay() -> void:
 	if phone_ui and ui_overlay_vp and phone_ui.get_parent() != ui_overlay_vp:
 		phone_ui.reparent(ui_overlay_vp)
 	phone_view_container.visible = true
+	phone_view.visible = true
 	Input.set_mouse_mode(Input.MOUSE_MODE_VISIBLE)
 
 func _move_ui_to_world() -> void:
 	if phone_ui and world_vp and phone_ui.get_parent() != world_vp:
 		phone_ui.reparent(world_vp)
 	phone_view_container.visible = false
+	phone_view.visible = false
 	Input.set_mouse_mode(Input.MOUSE_MODE_CAPTURED)
 
 func _emit_state() -> void:

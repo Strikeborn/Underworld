@@ -1,11 +1,12 @@
 63f7b34db8d8cdea90c76aacccf841ec
-::res://::1759437815
+::res://::1759441379
+540215__fitzysfunhouse__cell-phone-buzz-once.wav::AudioStreamWAV::9177723548386387703::1759441379::1759441379::1::::<><><>0<>0<>5f1387bbd67f367f1476cfd78cd970c7<>res://.godot/imported/540215__fitzysfunhouse__cell-phone-buzz-once.wav-7cdc17afe99189d468177fe6c0802b6c.sample::
 area_3d.gd::GDScript::8621941668363607593::1759283010::0::1::::<>Area3D<><>0<>0<><>::
 export_presets.cfg::TextFile::-1::1759283010::0::1::::<><><>0<>0<><>::
 free_-_skybox_basic_sky (1).glb::PackedScene::3398006485840426146::1759435422::1759435424::1::::<><><>0<>0<>828d5029b63cc0dbcfcb284d8b92323a<>res://.godot/imported/free_-_skybox_basic_sky (1).glb-9b537572c3094852a54792581b224f17.scn::uid://ciuyn1516bkcc::::res://free_-_skybox_basic_sky (1)_0.jpg
 free_-_skybox_basic_sky.glb::PackedScene::3487118624916469680::1759434327::1759434328::1::::<><><>0<>0<>9a487cd0f92a9f25642773fecadfa106<>res://.godot/imported/free_-_skybox_basic_sky.glb-f74fa51ac43e82a2e11057ca3277cd0f.scn::uid://d0wjrra8r3wq3::::res://free_-_skybox_basic_sky_0.jpg
-game.gd::GDScript::205887891694313830::1759422939::0::1::::<>Node3D<><>0<>0<><>::
-Game.tscn::PackedScene::7721108189536258242::1759431781::0::1::::<><><>0<>0<><>::uid://c4lccs8l5darl::::res://addons/godot4.3_fps_character_controller/Player/player.tscn<>uid://c6y7cxfe8t07::::res://game.gd
+game.gd::GDScript::205887891694313830::1759440288::0::1::::<>Node3D<><>0<>0<><>::
+Game.tscn::PackedScene::7721108189536258242::1759441317::0::1::::<><><>0<>0<><>::uid://c4lccs8l5darl::::res://addons/godot4.3_fps_character_controller/Player/player.tscn<>uid://c6y7cxfe8t07::::res://game.gd
 icon.png::CompressedTexture2D::4560153993965573308::1759283010::1759283217::1::::<><><>0<>0<>9ae3b31f562180a32b398d19d65ae1ca<>res://.godot/imported/icon.png-487276ed1e3a0c39cad0279d744ee560.ctex::
 icon.svg::CompressedTexture2D::7055169035039003648::1759283010::1759283217::1::::<><><>0<>0<>89a77b7cf6f40ad5694e134d09833d16<>res://.godot/imported/icon.svg-218a8f2b3041327d8a5756f3a245f83b.ctex::
 inkwell_with_feather_pen.glb::PackedScene::4882889822981888832::1759437616::1759434195::1::::<><><>0<>0<>933b93b462a3a0c81b5b0722b68793d5<>res://.godot/imported/inkwell_with_feather_pen.glb-5e047512c599bbdd8be4de4e60f55dd5.scn::uid://cp6mgwt0lxb60::::res://inkwell_with_feather_pen_0.jpg<>uid://pqybmc46lsjo::::res://inkwell_with_feather_pen_1.png<>uid://bt1d6v8p7q3l6::::res://inkwell_with_feather_pen_2.png<>uid://bklk6vi1mo2v0::::res://inkwell_with_feather_pen_3.png<>uid://yh0nglb8qfkl::::res://inkwell_with_feather_pen_4.png<>uid://cfyc7brd48bqi::::res://inkwell_with_feather_pen_5.png
@@ -59,23 +60,23 @@ spraypaint_can_mtn_hardcore.glb::PackedScene::2519612790251754446::1759437815::1
 ::res://addons/godot4.3_fps_character_controller/::1759283010
 godot4.3_fps_character_controller.gd::GDScript::1659884081048217523::1759283010::0::1::::<>EditorPlugin<><>0<>1<><>::
 plugin.cfg::TextFile::-1::1759283010::0::1::::<><><>0<>0<><>::
-::res://addons/godot4.3_fps_character_controller/Player/::1759431781
+::res://addons/godot4.3_fps_character_controller/Player/::1759441106
 Interactable.gd::GDScript::7580206567866857759::1759283010::0::1::::Interactable<>Node<><>0<>0<><>::
-player.tscn::PackedScene::6831151990695988069::1759430690::0::1::::<><><>0<>0<><>::uid://dmsdblns31p6w::::res://addons/godot4.3_fps_character_controller/Player/PlayerLogic.gd<>uid://cxgye82mmsj3w::::res://addons/godot4.3_fps_character_controller/Player/player_inetractcast_logic.gd<>uid://6hflm8vkdjoo::::res://addons/godot4.3_fps_character_controller/Player/Fonts/AmaticSC-Bold.ttf<>uid://bcxmr22sg84xe::::res://levels/phone.gd<>uid://h6o7nvdiwmhl::::res://addons/godot4.3_fps_character_controller/Player/Fonts/AmaticSC-Regular.ttf<>uid://c100htsfmykij::::res://levels/phone_ui.gd<>uid://25lsm5tfpy06::::res://addons/godot4.3_fps_character_controller/Player/rich_text_label.gd
+player.tscn::PackedScene::6831151990695988069::1759441106::0::1::::<><><>0<>0<><>::uid://dmsdblns31p6w::::res://addons/godot4.3_fps_character_controller/Player/PlayerLogic.gd<>uid://cxgye82mmsj3w::::res://addons/godot4.3_fps_character_controller/Player/player_inetractcast_logic.gd<>uid://6hflm8vkdjoo::::res://addons/godot4.3_fps_character_controller/Player/Fonts/AmaticSC-Bold.ttf<>uid://bcxmr22sg84xe::::res://levels/phone.gd<>uid://h6o7nvdiwmhl::::res://addons/godot4.3_fps_character_controller/Player/Fonts/AmaticSC-Regular.ttf<>uid://c100htsfmykij::::res://levels/phone_ui.gd<>uid://25lsm5tfpy06::::res://addons/godot4.3_fps_character_controller/Player/rich_text_label.gd
 PlayerLogic.gd::GDScript::8038871509776576384::1759431781::0::1::::Player<>CharacterBody3D<><>0<>0<><>::
 player_inetractcast_logic.gd::GDScript::6401037164129574274::1759283010::0::1::::<>RayCast3D<><>0<>0<><>::
 rich_text_label.gd::GDScript::1957730819554294009::1759429269::0::1::::<>RichTextLabel<><>0<>0<><>::
 ::res://addons/godot4.3_fps_character_controller/Player/Fonts/::1759283217
 AmaticSC-Bold.ttf::FontFile::2190628707980592038::1759283010::1759283217::1::::<><><>0<>0<>f04b0d213eb5f24c5c7a71eef32250a8<>res://.godot/imported/AmaticSC-Bold.ttf-c3d9a4c039fb3842889a7114884098b0.fontdata::
 AmaticSC-Regular.ttf::FontFile::556225514538087289::1759283010::1759283217::1::::<><><>0<>0<>93e392e2347ba0a560fbf39007549761<>res://.godot/imported/AmaticSC-Regular.ttf-ab903b1b71a5656265498e624884205f.fontdata::
-::res://levels/::1759437605
+::res://levels/::1759441317
 2D.tscn::PackedScene::1841038272317714950::1759436430::0::1::::<><><>0<>0<><>::uid://ctuwjrfrkqc28::::res://levels/level_2d_config.gd
-Level1.tscn::PackedScene::8040834931061437410::1759436135::0::1::::<><><>0<>0<><>::uid://du3secivd7sar::::res://area_3d.gd<>uid://ciuyn1516bkcc::::res://free_-_skybox_basic_sky (1)_0.jpg<>uid://d4b3e0opmbj78::::res://levels/level_config.gd
+Level1.tscn::PackedScene::8040834931061437410::1759440339::0::1::::<><><>0<>0<><>::uid://du3secivd7sar::::res://area_3d.gd<>uid://ciuyn1516bkcc::::res://free_-_skybox_basic_sky (1)_0.jpg<>uid://d4b3e0opmbj78::::res://levels/level_config.gd
 Level2.tscn::PackedScene::490767932911412224::1759437605::0::1::::<><><>0<>0<><>::uid://crbbt5h1edwov::::res://levels/level_2_config.gd<>uid://d3s0jvl0er7io::::res://shadow_figure.glb<>uid://diajkk0sivru6::::res://old_fat_man_character_full_rig.glb<>uid://b62yywsl6xs5v::::res://low_poly_base_mesh-530_tri.glb
-Level3.tscn::PackedScene::729628120694515135::1759436375::0::1::::<><><>0<>0<><>::uid://b17ra0brudiql::::res://c_7_rifle.tscn<>uid://c3p3q1nmrayen::::res://microphone.glb<>uid://dlioqck0fe6pn::::res://molotov_cocktail_with_lighter.glb<>uid://bai1e5yyl8k75::::res://simple_pencil.glb<>uid://g5id4r4giaxk::::res://levels/level_3_config.gd
-level_config.gd::GDScript::9198511448718016301::1759283010::0::1::::<>Node<><>0<>0<><>::
-phone.gd::GDScript::2575039482389481582::1759430585::0::1::::<>Node3D<><>0<>0<><>::
+Level3.tscn::PackedScene::729628120694515135::1759438226::0::1::::<><><>0<>0<><>::uid://b17ra0brudiql::::res://c_7_rifle.tscn<>uid://cbtkqnf7oeb5a::::res://inkwell_with_feather_pen.glb<>uid://c3p3q1nmrayen::::res://microphone.glb<>uid://dlioqck0fe6pn::::res://molotov_cocktail_with_lighter.glb<>uid://bai1e5yyl8k75::::res://simple_pencil.glb<>uid://g5id4r4giaxk::::res://levels/level_3_config.gd<>uid://bb5rwiv4h55xi::::res://spraypaint_can_mtn_hardcore.glb
+level_config.gd::GDScript::9198511448718016301::1759440339::0::1::::<>Node<><>0<>0<><>::
+phone.gd::GDScript::2575039482389481582::1759441317::0::1::::<>Node3D<><>0<>0<><>::
 phone_ui.gd::GDScript::6650892197197334881::1759429542::0::1::::<>Control<><>0<>0<><>::
-level_3_config.gd::GDScript::483557038538623768::1759436375::0::1::::<>Node<><>0<>0<><>::
-level_2_config.gd::GDScript::5968212321764717345::1759436388::0::1::::<>Node<><>0<>0<><>::
-level_2d_config.gd::GDScript::6149069698983391423::1759436431::0::1::::<>Node<><>0<>0<><>::
+level_3_config.gd::GDScript::483557038538623768::1759440396::0::1::::<>Node<><>0<>0<><>::
+level_2_config.gd::GDScript::5968212321764717345::1759440339::0::1::::<>Node<><>0<>0<><>::
+level_2d_config.gd::GDScript::6149069698983391423::1759440339::0::1::::<>Node<><>0<>0<><>::

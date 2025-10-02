@@ -1,9 +1,10 @@
-[gd_scene load_steps=12 format=3 uid="uid://g8y413k0fsyq"]
+[gd_scene load_steps=16 format=3 uid="uid://g8y413k0fsyq"]
 
 [ext_resource type="Script" uid="uid://crbbt5h1edwov" path="res://levels/level_2_config.gd" id="1_gljt1"]
 [ext_resource type="PackedScene" uid="uid://d3s0jvl0er7io" path="res://shadow_figure.glb" id="2_432n0"]
 [ext_resource type="PackedScene" uid="uid://diajkk0sivru6" path="res://old_fat_man_character_full_rig.glb" id="3_1hrej"]
 [ext_resource type="PackedScene" uid="uid://b62yywsl6xs5v" path="res://low_poly_base_mesh-530_tri.glb" id="4_1hrej"]
+[ext_resource type="Script" uid="uid://du3secivd7sar" path="res://area_3d.gd" id="5_wnytt"]
 
 [sub_resource type="BoxMesh" id="BoxMesh_gjjlr"]
 lightmap_size_hint = Vector2i(14, 21)
@@ -22,6 +23,14 @@ data = PackedVector3Array(15, 7.5, 15, -15, 7.5, 15, -15, -7.5, 15, 15, -7.5, 15
 [sub_resource type="BoxShape3D" id="BoxShape3D_gjjlr"]
 
 [sub_resource type="BoxMesh" id="BoxMesh_gljt1"]
+
+[sub_resource type="BoxShape3D" id="BoxShape3D_jiouf"]
+
+[sub_resource type="BoxMesh" id="BoxMesh_pixff"]
+size = Vector3(4.495, 1, 0.3)
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_6m74g"]
+albedo_color = Color(0, 0.48235294, 1, 1)
 
 [node name="Level2" type="Node3D"]
 
@@ -105,6 +114,27 @@ transform = Transform3D(0.015, 0, 0, 0, 0.015, 0, 0, 0, 0.015, -4.8789163, 0, 0)
 
 [node name="de8d3af3f2ef40fcae709f7a4aa579d3_fbx" parent="Person/Sketchfab_model" index="0"]
 transform = Transform3D(1, 0, 0, 0, -4.371139e-08, -1, 0, 1, -4.371139e-08, 0, 0, 0)
+
+[node name="Area3D_2" type="Area3D" parent="."]
+transform = Transform3D(-4.371139e-08, 0, -1, 0, 1, 0, 1, 0, -4.371139e-08, 13.022298, 0.952557, 0)
+script = ExtResource("5_wnytt")
+next_level_path = "res://levels/Level3.tscn"
+
+[node name="CollisionShape3D_2" type="CollisionShape3D" parent="Area3D_2"]
+shape = SubResource("BoxShape3D_jiouf")
+
+[node name="Label3D" type="Label3D" parent="Area3D_2/CollisionShape3D_2"]
+modulate = Color(0, 0.70980394, 0.90588236, 1)
+text = "https://Antifacts.ca/nazi_counter_strategies_101.choice"
+
+[node name="AreaMesh_2" type="MeshInstance3D" parent="Area3D_2/CollisionShape3D_2"]
+visible = false
+mesh = SubResource("BoxMesh_pixff")
+skeleton = NodePath("../../../RigidBody3D")
+surface_material_override/0 = SubResource("StandardMaterial3D_6m74g")
+
+[connection signal="body_entered" from="Area3D_2" to="Area3D_2" method="_on_area_3d_body_entered"]
+[connection signal="body_exited" from="Area3D_2" to="Area3D_2" method="_on_body_exited"]
 
 [editable path="Old fat man"]
 [editable path="Person"]

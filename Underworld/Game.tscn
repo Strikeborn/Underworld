@@ -1,7 +1,8 @@
-[gd_scene load_steps=3 format=3 uid="uid://diafr2r8ay86a"]
+[gd_scene load_steps=4 format=3 uid="uid://diafr2r8ay86a"]
 
 [ext_resource type="PackedScene" uid="uid://c4lccs8l5darl" path="res://addons/godot4.3_fps_character_controller/Player/player.tscn" id="1_a202f"]
 [ext_resource type="Script" uid="uid://c6y7cxfe8t07" path="res://game.gd" id="1_t88pq"]
+[ext_resource type="AudioStream" uid="uid://d3001bpjtg3u6" path="res://540215__fitzysfunhouse__cell-phone-buzz-once.wav" id="3_u44n3"]
 
 [node name="Game" type="Node3D" groups=["player"]]
 process_mode = 3
@@ -10,6 +11,9 @@ script = ExtResource("1_t88pq")
 [node name="Player" parent="." groups=["player"] instance=ExtResource("1_a202f")]
 unique_name_in_owner = true
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.0041751266, 1, 0.0056898594)
+
+[node name="Phone3D" parent="Player/Head" index="2"]
+move_time = null
 
 [node name="CanvasLayer" type="CanvasLayer" parent="." groups=["player"]]
 
@@ -38,16 +42,9 @@ mouse_filter = 0
 stretch = true
 mouse_target = true
 
-[node name="OverlayViewport" type="SubViewport" parent="PhoneLayer/PhoneView"]
-unique_name_in_owner = true
-disable_3d = true
-transparent_bg = true
-handle_input_locally = false
-size = Vector2i(720, 1080)
-render_target_update_mode = 4
-
 [node name="LevelRoot" type="Node3D" parent="." groups=["player"]]
 
-[node name="AudioStreamPlayer3D" type="AudioStreamPlayer3D" parent="."]
+[node name="PhoneBuzz" type="AudioStreamPlayer3D" parent="."]
+stream = ExtResource("3_u44n3")
 
 [editable path="Player"]
