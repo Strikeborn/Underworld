@@ -10,13 +10,14 @@ signal phone_link_clicked(path: String)
 @export var held_marker: NodePath
 @export var close_marker: NodePath
 @export var full_marker: NodePath
-
+@onready var head: Node3D            = $".."                # Player/Head
+@onready var phone3d: Node3D         = self                # This Phone3D
+@onready var phone_vp: SubViewport   = $SubViewport        # Player/Head/Phone3D/SubViewport
 # References in the Player scene
 # --- overlay pieces live under Game/PhoneLayer/PhoneView ---
 @onready var phone_view_container: SubViewportContainer = \
 	get_node_or_null("/root/Game/PhoneLayer/PhoneView")
-@onready var phone3d: Node = \
-	get_node_or_null("/root/Game/Player/Head/Phone3D")
+
 @onready var ui_overlay_vp: SubViewport = \
 	get_node_or_null("/root/Game/PhoneLayer/PhoneView/OverlayViewport")
 
