@@ -2,3 +2,4 @@ res://game.gd
 res://area_3d.gd
 res://levels/phone.gd
 res://Game.tscn
+res://addons/godot4.3_fps_character_controller/Player/player.tscn

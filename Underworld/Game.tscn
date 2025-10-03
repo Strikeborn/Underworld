@@ -1,8 +1,10 @@
-[gd_scene load_steps=4 format=3 uid="uid://diafr2r8ay86a"]
+[gd_scene load_steps=6 format=3 uid="uid://diafr2r8ay86a"]
 
 [ext_resource type="PackedScene" uid="uid://c4lccs8l5darl" path="res://addons/godot4.3_fps_character_controller/Player/player.tscn" id="1_a202f"]
 [ext_resource type="Script" uid="uid://c6y7cxfe8t07" path="res://game.gd" id="1_t88pq"]
+[ext_resource type="Script" uid="uid://c100htsfmykij" path="res://levels/phone_ui.gd" id="3_t88pq"]
 [ext_resource type="AudioStream" uid="uid://d3001bpjtg3u6" path="res://540215__fitzysfunhouse__cell-phone-buzz-once.wav" id="3_u44n3"]
+[ext_resource type="Script" uid="uid://25lsm5tfpy06" path="res://addons/godot4.3_fps_character_controller/Player/rich_text_label.gd" id="4_r0x5m"]
 
 [node name="Game" type="Node3D" groups=["player"]]
 process_mode = 3
@@ -43,8 +45,32 @@ mouse_target = true
 unique_name_in_owner = true
 disable_3d = true
 transparent_bg = true
+handle_input_locally = false
 size = Vector2i(720, 1080)
-render_target_update_mode = 4
+render_target_update_mode = 0
+
+[node name="PhoneUI" type="Control" parent="PhoneLayer/PhoneView/OverlayViewport"]
+unique_name_in_owner = true
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+script = ExtResource("3_t88pq")
+
+[node name="RichTextLabel" type="RichTextLabel" parent="PhoneLayer/PhoneView/OverlayViewport/PhoneUI"]
+unique_name_in_owner = true
+layout_mode = 0
+offset_right = 40.0
+offset_bottom = 40.0
+focus_mode = 2
+bbcode_enabled = true
+text = "[center][b]WORLD NEWS[/b][/center]
+[center]DEATH AND DESTRUCTION EVERYWHERE!!![/center]
+[url=res://levels/Level2.tscn]▶ Do something about it[/url]
+"
+script = ExtResource("4_r0x5m")
 
 [node name="PhoneBuzz" type="AudioStreamPlayer" parent="PhoneLayer"]
 stream = ExtResource("3_u44n3")

@@ -18,8 +18,8 @@ signal phone_link_clicked(path: String)
 @onready var phone_ui: Control = $SubViewport/PhoneUI     # the Control inside that SubViewport
 
 # References in the Game scene (absolute paths because they live outside the Player scene)
-@onready var phone_view_container: SubViewportContainer = get_node("/root/Game/PhoneLayer/PhoneView")
-@onready var ui_overlay_vp: SubViewport = get_node("/root/Game/PhoneLayer//PhoneView/OverlayViewport")
+@onready var phone_view_container: SubViewportContainer = get_node_or_null("/root/Game/PhoneLayer/PhoneView")
+@onready var ui_overlay_vp: SubViewport = get_node_or_null("/root/Game/PhoneLayer/OverlayViewport")
 
 # ---- cached transforms (local to Head) ----
 var _hip_xf: Transform3D
@@ -34,10 +34,10 @@ var _tween: Tween = null
 func _ready() -> void:
 	# Safety: ignore if overlay pieces aren’t present
 	if phone_view_container != null and ui_overlay_vp != null:
-		# draw phone UI into overlay when needed
-		phone_view_container.subviewport = ui_overlay_vp
-		ui_overlay_vp.gui_disable_input = false
-		phone_view_container.mouse_target = true
+		ui_overlay_vp.gui_disable_input = false     # allow UI input inside the SubViewport
+		phone_view_container.mouse_target = true    # clicks go to the SubViewport, not the container
+	else:
+		push_warning("Phone overlay not wired: PhoneView/OverlayViewport missing under /root/Game/PhoneLayer")
 
 	# Cache pose transforms
 	_hip_xf = _xf_from_marker(hip_marker, Vector3(0.15, -0.35, 0.15))
