@@ -1,16 +1,3 @@
-res://levels/Level3.tscn
-res://Game.tscn
-res://levels/phone.gd
-res://levels/Level1.tscn
-res://addons/godot4.3_fps_character_controller/Player/player.tscn
-res://levels/phone_ui.gd
-res://addons/godot4.3_fps_character_controller/Player/PlayerLogic.gd
-res://levels/Level2.tscn
-res://levels/level_3_config.gd
-res://levels/level_2_config.gd
-res://levels/2D.tscn
-res://levels/level_2d_config.gd
 res://game.gd
-res://levels/level_config.gd
 res://area_3d.gd
-res://End_Screen.tscn
+res://levels/phone.gd

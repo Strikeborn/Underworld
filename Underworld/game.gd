@@ -15,7 +15,6 @@ var _saved_mask  := 0
 var to_unfreeze: Array[RigidBody3D] = []
 
 @onready var phone3d: Node3D = $Player/Head/Phone3D  # adjust path if different
-@onready var overlay_vp: SubViewport = $PhoneLayer/PhoneView/OverlayViewport
 @onready var phone_vp: SubViewport = $Player/Head/Phone3D/SubViewport
 @onready var phone_ui: Control = $Player/Head/Phone3D/SubViewport/PhoneUI
 @onready var phone_layer: CanvasLayer = $PhoneLayer
@@ -36,7 +35,11 @@ func _finish_player_spawn() -> void:
 	player.collision_mask  = _saved_mask
 	if "velocity" in player:
 		player.velocity = Vector3.ZERO
-
+func _unhandled_input(event: InputEvent) -> void:
+	if event is InputEventMouseButton and event.pressed:
+		Input.set_mouse_mode(Input.MOUSE_MODE_CAPTURED)
+	if event.is_action_pressed("ui_cancel"): # ESC to release
+		Input.set_mouse_mode(Input.MOUSE_MODE_VISIBLE)
 func _on_phone_link_clicked(path: String) -> void:
 	phone_can_buzz = false   # stop buzzing once they actually click a link
 	_update_buzz()
@@ -101,9 +104,9 @@ func _ready() -> void:
 
 func _on_phone_opened() -> void:
 	# Move UI from the 3D phone to the fullscreen overlay viewport
-	if phone_ui.get_parent() != overlay_vp:
+	if phone_ui.get_parent() != phone_vp:
 		phone_ui.get_parent().remove_child(phone_ui)
-		overlay_vp.add_child(phone_ui)
+		phone_vp.add_child(phone_ui)
 	phone_layer.visible = true
 
 func _on_phone_closed() -> void:

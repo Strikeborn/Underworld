@@ -48,7 +48,7 @@ func _tween_to(t: Transform3D, dur := 0.20) -> void:
 	if _tween:
 		_tween.kill()
 	_tween = create_tween().set_trans(Tween.TRANS_CUBIC).set_ease(Tween.EASE_IN_OUT)
-	var from := global_transform
+	var _from := global_transform
 	var to   := head.global_transform * t
 	_tween.tween_property(self, "global_transform", to, dur)
 
@@ -109,7 +109,7 @@ func _buzz_enabled_for_level() -> bool:
 	# Stub: return true unless you later hook LevelConfig here
 	return true
 
-func _process(delta: float) -> void:
+func _process(_delta: float) -> void:
 	var game := get_node_or_null("/root/Game")
 
 	var should_buzz := true
