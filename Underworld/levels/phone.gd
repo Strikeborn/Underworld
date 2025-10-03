@@ -12,14 +12,16 @@ signal phone_link_clicked(path: String)
 @export var full_marker: NodePath
 
 # References in the Player scene
-@onready var head: Node3D = $".."        # this is Player/Head
-@onready var phone3d: Node3D = self
-@onready var phone_vp: SubViewport = $SubViewport         # Player/Head/Phone3D/SubViewport
-@onready var phone_ui: Control = $SubViewport/PhoneUI     # the Control inside that SubViewport
+# --- overlay pieces live under Game/PhoneLayer/PhoneView ---
+@onready var phone_view_container: SubViewportContainer = \
+	get_node_or_null("/root/Game/PhoneLayer/PhoneView")
+@onready var phone3d: Node = \
+	get_node_or_null("/root/Game/Player/Head/Phone3D")
+@onready var ui_overlay_vp: SubViewport = \
+	get_node_or_null("/root/Game/PhoneLayer/PhoneView/OverlayViewport")
 
-# References in the Game scene (absolute paths because they live outside the Player scene)
-@onready var phone_view_container: SubViewportContainer = get_node_or_null("/root/Game/PhoneLayer/PhoneView")
-@onready var ui_overlay_vp: SubViewport = get_node_or_null("/root/Game/PhoneLayer/OverlayViewport")
+@onready var phone_ui: Control = \
+	get_node_or_null("/root/Game/PhoneLayer/PhoneView/PhoneUI")
 
 # ---- cached transforms (local to Head) ----
 var _hip_xf: Transform3D
@@ -32,29 +34,33 @@ var _state := "hip"	# "hip" | "held" | "close" | "full"
 var _tween: Tween = null
 
 func _ready() -> void:
-	# Safety: ignore if overlay pieces aren’t present
+	# Wire SubViewport into the container and allow UI input.
 	if phone_view_container != null and ui_overlay_vp != null:
-		ui_overlay_vp.gui_disable_input = false     # allow UI input inside the SubViewport
-		phone_view_container.mouse_target = true    # clicks go to the SubViewport, not the container
-	else:
-		push_warning("Phone overlay not wired: PhoneView/OverlayViewport missing under /root/Game/PhoneLayer")
+		phone_view_container.subviewport = ui_overlay_vp
+		ui_overlay_vp.gui_disable_input = false
+		phone_view_container.mouse_target = true
+
+	# Make sure PhoneUI actually renders INSIDE the SubViewport.
+	# (SubViewportContainer does not render its own children.)
+	if phone_ui != null and ui_overlay_vp != null and phone_ui.get_parent() != ui_overlay_vp:
+		phone_ui.reparent(ui_overlay_vp)
 
 	# Cache pose transforms
-	_hip_xf = _xf_from_marker(hip_marker, Vector3(0.15, -0.35, 0.15))
-	_held_xf = _xf_from_marker(held_marker, Vector3(0.30, -0.12, -0.45))
+	_hip_xf   = _xf_from_marker(hip_marker,   Vector3(0.15, -0.35,  0.15))
+	_held_xf  = _xf_from_marker(held_marker,  Vector3(0.30, -0.12, -0.45))
 	_close_xf = _xf_from_marker(close_marker, Vector3(0.15, -0.05, -0.30))
-	var _full_default := Vector3(0.00, -0.02, -0.20)
-	_full_xf = _xf_from_marker(full_marker, _full_default)
+	_full_xf  = _xf_from_marker(full_marker,  Vector3(0.00, -0.02, -0.20))
 
-	# Start holstered
+	# Start holstered at hip
 	_apply_transform_immediate(_hip_xf)
 	_set_overlay(false)
 	_emit_state()
 
-	# Relay in-viewport UI link clicks (RichTextLabel meta_clicked)
-	var label := phone_ui.get_node_or_null("RichTextLabel") as RichTextLabel
-	if label and not label.is_connected("meta_clicked", Callable(self, "_on_phone_meta_clicked")):
-		label.connect("meta_clicked", Callable(self, "_on_phone_meta_clicked"))
+	# Connect RichTextLabel meta clicks (if present)
+	if phone_ui != null:
+		var label := phone_ui.get_node_or_null("RichTextLabel") as RichTextLabel
+		if label != null and not label.is_connected("meta_clicked", Callable(self, "_on_phone_meta_clicked")):
+			label.connect("meta_clicked", Callable(self, "_on_phone_meta_clicked"))
 
 func _on_phone_meta_clicked(meta: Variant) -> void:
 	if typeof(meta) == TYPE_STRING:
