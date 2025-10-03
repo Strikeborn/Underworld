@@ -15,6 +15,7 @@ var _saved_mask  := 0
 var to_unfreeze: Array[RigidBody3D] = []
 
 @onready var phone3d: Node3D = $Player/Head/Phone3D  # adjust path if different
+@onready var overlay_vp: SubViewport = $PhoneLayer/PhoneView/OverlayViewport
 @onready var phone_vp: SubViewport = $Player/Head/Phone3D/SubViewport
 @onready var phone_ui: Control = $Player/Head/Phone3D/SubViewport/PhoneUI
 @onready var phone_layer: CanvasLayer = $PhoneLayer
@@ -67,12 +68,14 @@ func _ready() -> void:
 
 		if phone3d.has_signal("phone_opened") and not phone3d.is_connected("phone_opened", c_open):
 			phone3d.connect("phone_opened", c_open)
-
 		if phone3d.has_signal("phone_closed") and not phone3d.is_connected("phone_closed", c_close):
 			phone3d.connect("phone_closed", c_close)
-
 		if phone3d.has_signal("phone_link_clicked") and not phone3d.is_connected("phone_link_clicked", c_link):
 			phone3d.connect("phone_link_clicked", c_link)
+		if phone3d and not phone3d.is_connected("phone_state_changed", Callable(self, "_on_phone_state_changed")):
+			phone3d.connect("phone_state_changed", Callable(self, "_on_phone_state_changed"))
+		if phone3d and not phone3d.is_connected("phone_link_clicked", Callable(self, "_on_phone_link_clicked")):
+			phone3d.connect("phone_link_clicked", Callable(self, "_on_phone_link_clicked"))
 	phone_layer.visible = false  # hidden until phone opens
 	process_mode = Node.PROCESS_MODE_ALWAYS
 	fade.modulate.a = 1.0
@@ -104,9 +107,9 @@ func _ready() -> void:
 
 func _on_phone_opened() -> void:
 	# Move UI from the 3D phone to the fullscreen overlay viewport
-	if phone_ui.get_parent() != phone_vp:
+	if phone_ui.get_parent() != overlay_vp:
 		phone_ui.get_parent().remove_child(phone_ui)
-		phone_vp.add_child(phone_ui)
+		overlay_vp.add_child(phone_ui)
 	phone_layer.visible = true
 
 func _on_phone_closed() -> void:
@@ -118,13 +121,12 @@ func _on_phone_closed() -> void:
 # game.gd
 
 func _on_phone_state_changed(state: String) -> void:
+	# UI is up when phone is "close" or "full"
 	var ui_up := (state == "close" or state == "full")
-	# called from your phone.gd signal
-	phone_is_close = (state == "close" or state == "full")
-	_update_buzz()
-	# overlay visibility
-	if phone_layer:
-		phone_layer.visible = ui_up   # your CanvasLayer with PhoneView under it
+
+	# show / hide the overlay layer
+	if is_instance_valid(phone_layer):
+		phone_layer.visible = ui_up
 
 	# mouse cursor mode
 	if ui_up:
@@ -132,6 +134,9 @@ func _on_phone_state_changed(state: String) -> void:
 	else:
 		Input.set_mouse_mode(Input.MOUSE_MODE_CAPTURED)
 
+	# update your “is_close” flag + buzz controller
+	phone_is_close = (state == "close" or state == "full")
+	_update_buzz()
 	# freeze player walking while UI is up (optional, if not done already)
 	if player and player.has_method("set_move_locked"):
 		player.set_move_locked(ui_up)

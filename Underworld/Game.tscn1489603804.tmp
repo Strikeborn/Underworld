@@ -7,6 +7,7 @@
 [node name="Game" type="Node3D" groups=["player"]]
 process_mode = 3
 script = ExtResource("1_t88pq")
+start_level_path = null
 
 [node name="Player" parent="." groups=["player"] instance=ExtResource("1_a202f")]
 unique_name_in_owner = true
