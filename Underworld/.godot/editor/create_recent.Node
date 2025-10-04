@@ -12,4 +12,3 @@ Node3D
 Label3D      - Matches the "text" keyword.
 AudioStreamPlayer3D
 AnimatedSprite2D
-RichTextLabel

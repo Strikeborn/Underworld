@@ -56,6 +56,11 @@ mesh = SubResource("BoxMesh_7ry0f")
 [node name="RayCast3D" type="RayCast3D" parent="Head/Phone3D"]
 transform = Transform3D(-4.3711385e-08, -1, 4.371139e-08, 1, -4.371139e-08, -4.371139e-08, 4.371139e-08, 4.371139e-08, 1, 0, 0, 0)
 
+[node name="SubViewport" type="SubViewport" parent="Head/Phone3D"]
+disable_3d = true
+transparent_bg = true
+snap_2d_transforms_to_pixel = true
+
 [node name="PhoneHipPose" type="Marker3D" parent="."]
 transform = Transform3D(-0.9803798, -0.1830127, 0.07322335, -0.18301272, 0.70710677, -0.68301266, 0.07322329, -0.68301266, -0.7267269, 0.5157278, -0.34255862, 0.0010310411)
 
